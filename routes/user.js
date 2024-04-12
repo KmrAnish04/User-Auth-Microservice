@@ -8,7 +8,11 @@ router.get('/', function(req, res, next) {
 
 /* GET user profile. */
 router.get('/profile', function(req, res, next) {
-    res.send(req.user);
+    res.json({
+        message: 'You made it to the secure route!',
+        user: req.user,
+        token: req.query.secret_token
+    })
 });
 
 module.exports = router;
