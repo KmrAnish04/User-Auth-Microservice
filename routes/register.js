@@ -2,22 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const {handleUserSignIn, helloSignIn} = require('../controllers/register');
 
-
-router.get('', (req, res)=>{
-    res.send(passport);
-})
-
-router.post('/signup', passport.authenticate('signup', {session: false}),
-    async (req, res, next) =>{
-        console.log("Creating New User!")
-        res.json({
-            message: 'SingUp Successfull!',
-            user: req.user
-        });
-    }
-);
-
+router.get('', helloSignIn);
+router.post('/signup', passport.authenticate('signup', {session: false}), handleUserSignIn);
 
 
 module.exports = router;

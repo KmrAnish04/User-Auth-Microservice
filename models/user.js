@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 
 
 const Scheme = mongoose.Schema;
-
 const UserSchema = new Scheme({
     email: {
         type: String,
@@ -39,5 +38,4 @@ UserSchema.methods.isValidPassword = async function(password){
 
 
 const UserModel = mongoose.model('user', UserSchema);
-
 module.exports = UserModel;

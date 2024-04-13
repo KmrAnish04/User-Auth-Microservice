@@ -7,8 +7,10 @@ API's =
 // Auth/Authr Strategies
 1. Email Auth
 2. Phone Number Auth (OTP signIn/LogIn)
-3. Google Auth
-4. Github Auth
-5. Twitter Auth
-6. Facebook Auth
-7. Instagram Auth
+3. Email OTP SignIn
+4. Google Auth
+5. Github Auth
+6. Twitter Auth
+7. Facebook Auth
+8. Instagram Auth
+9. SSO
