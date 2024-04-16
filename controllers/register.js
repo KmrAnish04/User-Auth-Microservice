@@ -1,4 +1,6 @@
 // User Register Controllers
+const passport = require('passport');
+
 function helloSignIn (req, res) { res.send(passport) }
 
 async function handleUserSignIn(req, res, next) {

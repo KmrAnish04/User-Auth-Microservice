@@ -4,7 +4,10 @@ const passport = require('passport');
 
 
 // Just a Hello Route
-function helloLogin (req, res) { res.send('Hello Login!') }
+function helloLogin (req, res) { 
+    console.log(req);
+    res.json({msg: "hello bhai!"}) 
+}
 
 // Handling User Login
 async function handleUserLogin (req, res, next) {
@@ -41,4 +44,14 @@ async function handleUserLogin (req, res, next) {
 }
 
 
-module.exports = {handleUserLogin, helloLogin}
+// Handling User LogOut
+function handleUserLogOut (req, res, next) {
+    req.logout(function (err) {
+        if(err) {return next(err)};
+        console.log("User is Logging Out!")
+        res.redirect('/');
+    })
+}
+
+
+module.exports = {handleUserLogin, helloLogin, handleUserLogOut}

@@ -4,3 +4,99 @@
 1713045361881:::1 GET: /api/users
 
 1713045374945:::1 GET: /api/users/profile
+
+1713294370069:::1 GET: /
+
+1713294527890:::1 POST: /api/auth/register/signup
+
+1713294568981:::1 POST: /api/auth/register/signup
+
+1713294599737:::1 POST: /api/auth/register/
+
+1713294609577:::1 GET: /api/auth/register/
+
+1713294624465:::1 GET: /api/auth/register/
+
+1713294652295:::1 GET: /api/auth/register/
+
+1713294681144:::1 GET: /api/auth/register/
+
+1713294696533:::1 GET: /api/auth/register/
+
+1713294728338:::1 GET: /api/auth/register/
+
+1713294773046:::1 GET: /api/register/
+
+1713294797559:::1 GET: /api/register
+
+1713294806777:::1 GET: /api/register
+
+1713294867304:::1 GET: /api/register
+
+1713294929026:::1 GET: /api/register
+
+1713294968970:::1 POST: /api/register/signup
+
+1713294986393:::1 POST: /api/user/profile
+
+1713294999535:::1 POST: /api/users/profile
+
+1713295013976:::1 POST: /api/auth/login
+
+1713295111914:::1 GET: /api/users/profile
+
+1713295153929:::1 POST: /api/auth/logout
+
+1713295423239:::1 POST: /api/users/profile
+
+1713295433469:::1 GET: /api/users/profile
+
+1713295434842:::1 GET: /api/users/profile
+
+1713295438161:::1 GET: /api/users/profile
+
+1713295456521:::1 POST: /api/auth/login
+
+1713295515915:::1 GET: /api/users/profile
+
+1713295525270:::1 GET: /api/users/profile
+
+1713295560759:::1 POST: /api/auth/logout
+
+1713295580364:::1 GET: /api/users/profile
+
+1713295673589:::1 GET: /api/users/profile
+
+1713295700424:::1 GET: /api/auth/
+
+1713295758493:::1 GET: /api/auth/
+
+1713295840124:::1 GET: /api/auth/
+
+1713296235612:::1 GET: /
+
+1713296265944:::1 POST: /api/auth/login
+
+1713296310138:::1 GET: /api/users/profile
+
+1713296344281:::1 POST: /api/auth/logout
+
+1713296679308:::1 POST: /api/auth/login
+
+1713296694038:::1 POST: /api/auth/
+
+1713296726912:::1 GET: /api/auth/
+
+1713296738603:::1 GET: /api/users/profile
+
+1713296764996:::1 GET: /api/users/profile
+
+1713296795867:::1 POST: /api/auth/logout
+
+1713296795899:::1 GET: /
+
+1713296862795:::1 POST: /api/auth/login
+
+1713296881728:::1 POST: /api/auth/logout
+
+1713296881745:::1 GET: /
