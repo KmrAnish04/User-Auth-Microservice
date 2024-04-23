@@ -100,3 +100,37 @@
 1713296881728:::1 POST: /api/auth/logout
 
 1713296881745:::1 GET: /
+
+1713898372604:::1 GET: /
+
+1713898373216:::1 GET: /favicon.ico
+
+1713898387590:::1 GET: /api/auth/google/login
+
+1713898387714:::1 GET: /favicon.ico
+
+1713898429650:::1 GET: /api/auth/google/login
+
+1713898462867:::1 GET: /favicon.ico
+
+1713898487793:::1 GET: /api/auth/google/login
+
+1713898514121:::1 GET: /
+
+1713898514253:::1 GET: /favicon.ico
+
+1713898520640:::1 GET: /
+
+1713898520771:::1 GET: /favicon.ico
+
+1713898527367:::1 GET: /users/profile
+
+1713898527531:::1 GET: /favicon.ico
+
+1713898564862:::1 GET: /users/profile
+
+1713898564918:::1 GET: /favicon.ico
+
+1713898567536:::1 GET: /users/profile
+
+1713898567584:::1 GET: /favicon.ico

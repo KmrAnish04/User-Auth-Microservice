@@ -1,9 +1,11 @@
 const passport = require("passport");
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const UserModel = require('../models/user');
+require('dotenv').config();
 
 
 // SignUp Middleware
@@ -51,7 +53,6 @@ passport.use(
     }
 ));
 
-
 // Middleware that allows only requests with valid tokens to access some special routes needing authentication
 passport.use(new JWTStrategy(
     {
@@ -69,3 +70,20 @@ passport.use(new JWTStrategy(
     //     .catch(err => {return cb(err);})
     // }
 ));
+
+passport.use(new GoogleStrategy({
+        clientID: process.env.Google_Client_ID,
+        clientSecret: process.env.Google_Client_Secret,
+        callbackURL: "http://localhost:3000/users/profile",
+        passReqToCallback: true
+    },
+    function (request, accessToken, refreshToken, profile, done) {
+        UserModel.findOrCreate({googleId: profile.id}, function (err, user){
+            return done(err, user);
+        })
+    }
+));
+
+
+passport.serializeUser((user,done)=>{done(null,user);})
+passport.deserializeUser((user,done)=>{done(null,user);})
