@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const findOrCreate = require("mongoose-findorcreate");
 const bcrypt = require('bcrypt');
 
 
@@ -36,6 +37,33 @@ UserSchema.methods.isValidPassword = async function(password){
     return compare;
 }
 
+// User Schema for Google Authenticated Users
+const GoogleUserSchema = new Scheme({
+    googleId: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    name: {
+        type: Object,
+        required: true,
+        unique: false
+    },
+   displayName: {
+        type: String,
+        required: true,
+        unique: false
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: false
+    }
+});
+GoogleUserSchema.plugin(findOrCreate);
+
+
 
 const UserModel = mongoose.model('user', UserSchema);
-module.exports = UserModel;
+const GoogleUserModel = mongoose.model('GoogleUser', GoogleUserSchema);
+module.exports = {UserModel, GoogleUserModel};

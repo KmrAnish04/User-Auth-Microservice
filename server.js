@@ -44,7 +44,8 @@ app.use(logReqRes('log.txt'))                               // Custom Middleware
 app.use('/api/auth', UserAuthentication);
 app.use('/api/register', UserAuthorization);
 app.use('/api/users', passport.authenticate('jwt', {session: false}), user);
-app.use('/', function(req, res, next) {res.json("Heyj Hii ✋, You're at Home Page!")})
+app.use('/Blogs', function(req, res, next) {res.json("Here are the Blogs!")})
+// app.use('/', function(req, res, next) {res.json("Heyj Hii ✋, You're at Home Page!")})
 
 
 // Error Handling

@@ -4,7 +4,7 @@ const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const UserModel = require('../models/user');
+const {UserModel, GoogleUserModel} = require('../models/user');
 require('dotenv').config();
 
 
@@ -71,17 +71,27 @@ passport.use(new JWTStrategy(
     // }
 ));
 
+
+// Google Login Middleware
 passport.use(new GoogleStrategy({
         clientID: process.env.Google_Client_ID,
         clientSecret: process.env.Google_Client_Secret,
-        callbackURL: "http://localhost:3000/users/profile",
+        callbackURL: "http://localhost:3000/api/auth/google/callback",
         passReqToCallback: true
     },
     function (request, accessToken, refreshToken, profile, done) {
-        UserModel.findOrCreate({googleId: profile.id}, function (err, user){
-            return done(err, user);
-        })
-    }
+        GoogleUserModel.findOrCreate(
+            {
+                googleId: profile.id, 
+                email: profile.email,
+                name: profile.name,
+                displayName: profile.displayName,
+            }, 
+            function (err, user){
+                console.log("Saving Data For Google User!")
+                return done(err, user);
+            }
+    )}
 ));
 
 
