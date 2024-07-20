@@ -1300,3 +1300,47 @@
 1721469671980:::1 GET: /api/v1/auth/login
 
 1721469676980:::1 POST: /api/v1/auth/login
+
+1721473193676:::1 POST: /api/v1/register/signup
+
+1721473382900:::1 POST: /api/v1/auth/login
+
+1721473467404:::1 POST: /api/v1/auth/login
+
+1721473527580:::1 POST: /api/v1/auth/login
+
+1721473549946:::1 POST: /api/v1/auth/login
+
+1721473550101:::1 GET: /
+
+1721473623156:::1 POST: /api/v1/auth/login
+
+1721473724064:::1 POST: /api/v1/auth/login
+
+1721473770198:::1 POST: /api/v1/auth/login
+
+1721474218442:::1 POST: /api/v1/auth/login
+
+1721474391946:::1 POST: /api/v1/auth/login
+
+1721474597388:::1 POST: /api/v1/auth/login
+
+1721475011080:::1 POST: /api/v1/auth/login
+
+1721475322019:::1 POST: /api/v1/auth/login
+
+1721475347433:::1 POST: /api/v1/auth/login
+
+1721499111171:::1 POST: /api/v1/auth/login
+
+1721501449924:::1 GET: /api/v1/auth/login
+
+1721501552514:::1 GET: /api/v1/auth/login
+
+1721501652036:::1 GET: /api/v1/auth/login
+
+1721501691057:::1 GET: /api/v1/auth/login
+
+1721501715584:::1 POST: /api/v1/auth/login
+
+1721501977316:::1 POST: /api/v1/auth/login

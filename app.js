@@ -10,7 +10,7 @@ require('./src/passport-Config');
 
 // ********************************* Routes Imports *******************************************************************************
 const userAuthRoute = require('./routes/auth.route.js');
-const UserRegisterRoute = require('./routes/register.route.js');
+const userRegisterRoute = require('./routes/register.route.js');
 const ssoAuth = require('./routes/ssoAuth');
 const user = require('./routes/user');
 
@@ -41,7 +41,7 @@ app.use(logReqRes('log.txt'))                               // Custom Middleware
 
 // ********************************* Routes *********************************
 app.use('/api/v1/auth', userAuthRoute);
-app.use('/api/v1/register', UserRegisterRoute);
+app.use('/api/v1/register', userRegisterRoute);
 app.use('/api/v1/ssoauth', ssoAuth);
 
 app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);

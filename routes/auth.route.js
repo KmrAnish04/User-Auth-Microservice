@@ -1,10 +1,10 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { handleUserLogin, helloLogin, handleUserLogOut } = require('../controllers/auth.controller');
+const { handleUserLogin, giveLoginAccess, handleUserLogOut } = require('../controllers/auth.controller');
 
 router.route('/login')
-    .get(helloLogin)
+    .get(giveLoginAccess)
     .post(handleUserLogin);
 
 router.post('/logout', handleUserLogOut);
