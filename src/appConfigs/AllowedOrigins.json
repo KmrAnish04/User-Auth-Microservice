@@ -1,0 +1,6 @@
+{
+    "http://consumer.anishkmr.in:3020": true,
+    "http://consumertwo.anishkmr.in:3030": true,
+    "http://sso.anishkmr.in:3080": false,
+    "http://127.0.0.1:3020": true
+}

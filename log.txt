@@ -1228,3 +1228,75 @@
 1717700491232:::1 POST: /api/ssoauth/login
 
 1717700538232:::1 POST: /api/ssoauth/login
+
+1721457056154:::1 GET: /
+
+1721457056457:::1 GET: /favicon.ico
+
+1721457057834:::1 GET: /
+
+1721457069735:::1 GET: /
+
+1721457089039:::1 GET: /
+
+1721461505327:::1 GET: /api/v1/auth/login
+
+1721461586868:::1 GET: /api/v1/auth/login
+
+1721461603658:::1 GET: /api/v1/auth/login
+
+1721466401475:::1 GET: /api/v1/auth/login
+
+1721467302971:::1 GET: /api/v1/auth/login
+
+1721467366752:::1 GET: /api/v1/auth/login
+
+1721467393563:::1 GET: /api/v1/auth/login
+
+1721467427610:::1 GET: /api/v1/auth/login
+
+1721467464418:::1 GET: /api/v1/auth/login
+
+1721467497693:::1 GET: /api/v1/auth/login
+
+1721467536516:::1 GET: /api/v1/auth/login
+
+1721467581552:::1 GET: /api/v1/auth/login
+
+1721467585592:::1 GET: /api/v1/auth/login
+
+1721467606950:::1 GET: /api/v1/auth/login
+
+1721467860959:::1 GET: /api/v1/auth/login
+
+1721467892518:::1 GET: /api/v1/auth/login
+
+1721467944425:::1 GET: /api/v1/auth/login
+
+1721467959092:::1 GET: /api/v1/auth/login
+
+1721468003516:::1 GET: /api/v1/auth/login
+
+1721468067882:::1 GET: /api/v1/auth/login
+
+1721468151666:::1 GET: /api/v1/auth/login
+
+1721468157628:::1 GET: /api/v1/auth/login
+
+1721468157638:::1 GET: /
+
+1721468316775:::1 GET: /api/v1/auth/login
+
+1721468515886:::1 GET: /api/v1/auth/login
+
+1721468703279:::1 GET: /api/v1/auth/login
+
+1721468713179:::1 POST: /api/v1/auth/login
+
+1721469547884:::1 GET: /api/v1/auth/login
+
+1721469552933:::1 POST: /api/v1/auth/login
+
+1721469671980:::1 GET: /api/v1/auth/login
+
+1721469676980:::1 POST: /api/v1/auth/login
