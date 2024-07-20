@@ -80,7 +80,7 @@ passport.use(new GoogleStrategy({
         passReqToCallback: true
     },
     function (request, accessToken, refreshToken, profile, done) {
-        console.log({request, accessToken, refreshToken, profile});
+        // console.log({request, accessToken, refreshToken, profile});
         GoogleUserModel.findOrCreate(
             {
                 googleId: profile.id, 

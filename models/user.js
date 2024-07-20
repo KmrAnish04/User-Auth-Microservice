@@ -3,8 +3,8 @@ const findOrCreate = require("mongoose-findorcreate");
 const bcrypt = require('bcrypt');
 
 
-const Scheme = mongoose.Schema;
-const UserSchema = new Scheme({
+const Schema = mongoose.Schema;
+const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -38,7 +38,7 @@ UserSchema.methods.isValidPassword = async function(password){
 }
 
 // User Schema for Google Authenticated Users
-const GoogleUserSchema = new Scheme({
+const GoogleUserSchema = new Schema({ 
     googleId: {
         type: String,
         required: true,

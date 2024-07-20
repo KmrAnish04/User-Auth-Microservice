@@ -12,6 +12,7 @@ require('./src/passport-Config');
 // ********************************* Routes Imports *******************************************************************************
 const UserAuthentication = require('./routes/auth');
 const UserAuthorization = require('./routes/register');
+const ssoAuth = require('./routes/ssoAuth');
 const user = require('./routes/user');
 
 
@@ -45,15 +46,16 @@ app.use(logReqRes('log.txt'))                               // Custom Middleware
 // ********************************* Routes *********************************
 app.use('/api/auth', UserAuthentication);
 app.use('/api/register', UserAuthorization);
+app.use('/api/ssoauth', ssoAuth);
 app.use('/api/users', passport.authenticate('jwt', {session: false}), user);
 app.use('/Blogs', function(req, res, next) {
-    console.log("Log from /Blogs: ", req.user, req.isAuthenticated());
+    console.log("Log from /Blogs: ", req.isAuthenticated());
     res.json("Here are the Blogs!")
 })
-app.use('/', function(req, res, next) {
-    console.log("Logs from /", req.user, req.isAuthenticated());
-    res.json({msg: "Heyj Hii ✋, You're at Home Page!"})
-})
+// app.use('/', function(req, res, next) {
+//     console.log("Logs from /", req.isAuthenticated());
+//     res.json({msg: "Heyj Hii ✋, You're at Home Page!"})
+// })
 
 
 // ********************************* Error Handling *********************************
@@ -64,4 +66,4 @@ app.use(errorHandler()); // error handler
 // ********************************* DB Connection and Start Server *********************************
 connectToMongoDB('mongodb://localhost:27017/UserAuthMicroservice')
 .then(()=>{ app.listen(port, ()=>{console.log(`Listening on port ${port}: http://localhost:3000/`);});})
-.catch(err=>{ console.error("Can't listen to the port, something went wrong!", err);})
+.catch(err=>{ console.error("Can't listen to the port, something went wrong!", err); })
