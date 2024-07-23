@@ -5,7 +5,7 @@ const PORT = 3000;
 
 
 // ********************************* DB Connection and Start Server *********************************
-connectToMongoDB('mongodb://localhost:27017/UserAuthMicroservice')
+connectToMongoDB(process.env.DB_URL)
 .then(()=>{ 
     app.listen(PORT, ()=>{console.log(`Listening on port ${PORT}: http://localhost:${PORT}/`);});
 })

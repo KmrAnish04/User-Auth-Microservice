@@ -8,7 +8,7 @@ const { logReqRes, catchErrors, errorHandler } = require('./middlewares');
 const passport = require("passport");
 require('./src/passport-Config');
 
-// ********************************* Routes Imports *******************************************************************************
+// ********************************* Routes Imports ************************************************
 const userAuthRoute = require('./routes/auth.route.js');
 const userRegisterRoute = require('./routes/register.route.js');
 const ssoAuth = require('./routes/ssoAuth');

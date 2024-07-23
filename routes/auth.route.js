@@ -1,11 +1,13 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { handleUserLogin, giveLoginAccess, handleUserLogOut } = require('../controllers/auth.controller');
+const { handleUserLogin, giveLoginAccess, handleUserLogOut, verifySSOToken } = require('../controllers/auth.controller');
 
 router.route('/login')
     .get(giveLoginAccess)
     .post(handleUserLogin);
+
+router.get('/verifySSOToken', verifySSOToken)
 
 router.post('/logout', handleUserLogOut);
 
