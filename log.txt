@@ -1694,3 +1694,59 @@
 1721849103918:::1 GET: /api/v1/auth/login
 
 1721849103993:::ffff:127.0.0.1 GET: /api/v1/auth/verifySSOToken
+
+1721931040116:::1 POST: /api/v1/register/signup
+
+1721931349201:::1 POST: /api/v1/register/signup
+
+1721931645488:::1 POST: /api/v1/register/signup
+
+1721931961242:::1 POST: /api/v1/register/signup
+
+1721932221902:::1 POST: /api/v1/register/signup
+
+1721932296298:::1 POST: /api/v1/register/signup
+
+1721932431888:::1 POST: /api/v1/register/signup
+
+1721932587547:::1 POST: /api/v1/register/signup
+
+1721932685942:::1 POST: /api/v1/register/signup
+
+1721932758505:::1 POST: /api/v1/register/signup
+
+1721933111180:::1 POST: /api/v1/register/signup
+
+1721933444588:::1 POST: /api/v1/register/signup
+
+1721933672975:::1 POST: /api/v1/register/signup
+
+1721934419883:::1 POST: /api/v1/register/signup
+
+1721934478942:::1 POST: /api/v1/register/signup
+
+1721934560187:::1 POST: /api/v1/register/signup
+
+1721934598442:::1 POST: /api/v1/register/signup
+
+1721934802901:::1 POST: /api/v1/register/signup
+
+1721934837790:::1 POST: /api/v1/register/signup
+
+1721934985468:::1 POST: /api/v1/register/signup
+
+1721935377808:::1 POST: /api/v1/register/signup
+
+1721935454722:::1 POST: /api/v1/register/signup
+
+1722010084876:::1 GET: /api/v1/auth/login
+
+1722010105959:::1 POST: /api/v1/auth/login
+
+1722010106140:::ffff:127.0.0.1 GET: /api/v1/auth/verifySSOToken
+
+1722018690527:::1 GET: /api/v1/auth/login
+
+1722018778185:::1 GET: /
+
+1722023693019:::1 GET: /api/v1/auth/login

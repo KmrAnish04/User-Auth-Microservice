@@ -5,6 +5,7 @@ const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const {UserModel, GoogleUserModel} = require('../models/user');
+const ApiError = require("./utils/ApiError.js");
 require('dotenv').config();
 
 
@@ -18,12 +19,17 @@ passport.use(
         },
         async (email, password, cb) => {
             try{
-                const user = await UserModel.create({email, password});
-                return cb(null, user);
+                const isUserExists = await UserModel.findOne({email}).select("-password");
+               
+                if(isUserExists){
+                    console.log('isUserExists :>> ', isUserExists);
+                    throw new ApiError(405, "User Already Exists!")
+                    // const error = new ApiError(405, "User Already Exists!")
+                    // return cb(error, null);
+                }
 
-                // const user = new UserModel({email, password});
-                // user.save().then(user => console.log("user saved!", user));
-                // return cb(null, user);
+                const user = await UserModel.create({email, password});
+                return cb(null, user, {message: "signup successfull!", status: 200});
 
             }
             catch (error) { cb(error) }

@@ -2,7 +2,6 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const crypto = require('crypto');
-const { Store } = require('express-session');
 
 // Just a Hello Route
 function helloLogin (req, res) { 

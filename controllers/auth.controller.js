@@ -4,7 +4,7 @@ const passport = require('passport');
 const ApiError = require("../src/utils/ApiError.js");
 const ApiResponse = require("../src/utils/ApiResponse.js");
 const AsyncHandler = require("../src/utils/AsyncHandler.js");
-const {encodedId} = require("../src/utils/utilitiy.js");
+const {encodedId} = require("../src/utils/utility.js");
 const URL = require("url").URL;
 const {
     ALLOWED_APPS_ORIGINS, 
