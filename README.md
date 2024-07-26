@@ -63,10 +63,10 @@ To generate RSA private and public keys, follow these steps:
 To generate tokens for applications that need to access the authentication microservice, follow these steps:
 
 ### 1. To generate with openSSL (No Base64):
-- **Syntax:**
+- **Command:**
   ```sh
-  openssl openssl rand -hex 16
+  openssl rand -hex 16
 ### 2. To generate With Cryto/HashIds (Base64):
-- **Syntax:**
+- **Command:**
   ```sh
   node ./src/generateAppTokens.js 
