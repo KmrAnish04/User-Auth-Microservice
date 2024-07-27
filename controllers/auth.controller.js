@@ -1,5 +1,4 @@
 // User Authentication Controller
-const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const ApiError = require("../src/utils/ApiError.js");
 const ApiResponse = require("../src/utils/ApiResponse.js");
@@ -16,8 +15,7 @@ const {
     BEARER_AUTH_SCHEME,
     HEADER_REG_EX
 } = require("../src/appConfigs/AllowedAppsConfig.js");
-const app = require('../app.js');
-const {UserModel} = require('../models/user.js');
+const {UserModel} = require('../models/user.model.js');
 
 const {generateJwtToken} = require("../src/JWT_Helper.js");
 
@@ -89,7 +87,7 @@ const handleUserLogin = AsyncHandler(async (req, res, next) => {
 
                 return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);    
             } 
-            catch (error) { return next(error);}
+            catch (error) { return next(error); }
         }
     )
     (req, res, next);
@@ -224,9 +222,49 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 
 });
 
+
+
+const letSignUpUser = AsyncHandler(async (req, res, next) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "this is SignUp Page!"))
+});
+
+const doSignUpUser = AsyncHandler( async (req, res, next) => {
+    passport.authenticate(
+        'signup', 
+        {session: false}, 
+        (err, user, info) => {
+            try {
+                if (err) {
+                    console.log('Error during signup:', err.message || 'Error during signup');
+                    return next(new ApiError(405, err.message || 'Error during signup'));
+                }
+    
+                if (!user) {
+                    console.log("Not able to get user, inside if(!user){} condition!!");
+                    return next(new ApiError(500, info ? info.message : 'Signup failed, Internal Server Error!'));
+                }
+                
+                // show a flash message to user and let him know that signup is successfull
+                // and redirect him to /login page, to ask him to login with new singup credentials.
+                // also take care of how you will manage redirectURL incase of signup process.
+                return res
+                .status(200)
+                .json(new ApiResponse(200, {}, "SignUp Successfull!!! 🎉🎊✅"))
+                
+            } 
+            catch (error) { return next(error); }
+        }
+    )(req, res, next);
+
+});
+
 module.exports = {
     giveLoginAccess,
     handleUserLogin,
     handleUserLogOut,
-    verifySSOToken
+    verifySSOToken,
+    letSignUpUser,
+    doSignUpUser
 }

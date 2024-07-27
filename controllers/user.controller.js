@@ -1,7 +1,7 @@
 // User Route Controller
 const mongoose = require('mongoose');
 
-const {UserModel} = require("../models/user");
+const {UserModel} = require("../models/user.model");
 // const UserModel = mongoose.models['user']; 
 
 /* GET users listing. */

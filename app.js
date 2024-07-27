@@ -1,22 +1,28 @@
+// ********************************* Package Imports *********************************
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session =  require("express-session");
 
+
+
 // ********************************* Custom Imports *********************************
-const { logReqRes, catchErrors, errorHandler } = require('./middlewares');
+const { logReqRes, catchErrors, errorHandler } = require('./middlewares/index.middleware.js');
 const passport = require("passport");
 require('./src/passport-Config');
 
+
+
 // ********************************* Routes Imports ************************************************
 const userAuthRoute = require('./routes/auth.route.js');
-const userRegisterRoute = require('./routes/register.route.js');
-const ssoAuth = require('./routes/ssoAuth');
-const user = require('./routes/user');
+const user = require('./routes/user.route.js');
+
 
 
 // ********************************* App Initialization *********************************
 const app = express();
+
+
 
 // ********************************* Setup Passport Middlewares *********************************
 app.use(session({
@@ -29,6 +35,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
+
 // ********************************* Setup App Level Middlewares *********************************
 app.set('views', path.join(__dirname, 'views'));            // views directory setup
 app.set('view engine', 'ejs'); // view engine setup
@@ -39,10 +46,10 @@ app.use(logReqRes('log.txt'))                               // Custom Middleware
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 
+
 // ********************************* Routes *********************************
 app.use('/api/v1/auth', userAuthRoute);
-app.use('/api/v1/register', userRegisterRoute);
-app.use('/api/v1/ssoauth', ssoAuth);
+
 
 app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);
 app.use('/Blogs', function(req, res, next) {
@@ -53,6 +60,7 @@ app.use('/', function(req, res, next) {
     console.log("Logs from /", req.isAuthenticated());
     res.json({msg: "Hey Hii ✋, You're at Home Page!"})
 })
+
 
 
 // ********************************* Error Handling *********************************

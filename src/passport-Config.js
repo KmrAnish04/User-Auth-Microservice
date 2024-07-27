@@ -4,7 +4,7 @@ const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const {UserModel, GoogleUserModel} = require('../models/user');
+const {UserModel, GoogleUserModel} = require('../models/user.model.js');
 const ApiError = require("./utils/ApiError.js");
 require('dotenv').config();
 
@@ -82,11 +82,11 @@ passport.use(new JWTStrategy(
 passport.use(new GoogleStrategy({
         clientID: process.env.Google_Client_ID,
         clientSecret: process.env.Google_Client_Secret,
-        callbackURL: "http://localhost:3000/api/auth/google/callback",
+        callbackURL: "http://localhost:3000/api/v1/auth/google/callback",
         passReqToCallback: true
     },
     function (request, accessToken, refreshToken, profile, done) {
-        // console.log({request, accessToken, refreshToken, profile});
+        console.log({request, accessToken, refreshToken, profile});
         GoogleUserModel.findOrCreate(
             {
                 googleId: profile.id, 

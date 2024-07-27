@@ -12,17 +12,18 @@
 
 To Do:
 1. Add User Logout functionality
-2. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
-3. Make SSO Service with Google Auth Strategy
-4. Make User Register SSO Microservice Functionality
-5. Add Access ans Refresh Token Functionality
-6. Add Forgot Password Functionality
-7. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
-8. Integrate DB functions with other services. For example: if user likes the post then that like count 
+2. Create middleware for protected routes (like jwt authenticate in Devfolio)
+3. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
+4. Make SSO Service with Google Auth Strategy
+5. Make User Register SSO Microservice Functionality
+6. Add Access ans Refresh Token Functionality
+7. Add Forgot Password Functionality
+8. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
+9. Integrate DB functions with other services. For example: if user likes the post then that like count 
    should added in post model as well as user model in the MongoDB, so how to link these kind of tasks in case
    of microservices.
-9. Bug Fixing, Testing and Handling Corner Cases
-10. Give Profile Photo upload feature while signup
+10. Bug Fixing, Testing and Handling Corner Cases
+11. Give Profile Photo upload feature while signup
 
 
 
