@@ -4,27 +4,29 @@ const ApiError = require("../src/utils/ApiError.js");
 const ApiResponse = require("../src/utils/ApiResponse.js");
 const AsyncHandler = require("../src/utils/AsyncHandler.js");
 const {encodedId} = require("../src/utils/utility.js");
+const {generateJwtToken} = require("../src/JWT_Helper.js");
 const URL = require("url").URL;
 const {
     ALLOWED_APPS_ORIGINS, 
-    ALLOWED_APPS_NAMES, 
     APPS_SESSIONS, 
     USER_SESSIONS, 
     SSO_TOKEN_CACHE,
-    AUTH_HEADER,
-    BEARER_AUTH_SCHEME,
-    HEADER_REG_EX
 } = require("../src/appConfigs/AllowedAppsConfig.js");
-const {UserModel} = require('../models/user.model.js');
+const {
+    fetchAppTokenFromRequest, 
+    storeAppInCache, 
+    generatePayload
+} = require('./utils.controller/utils.controller.js')
+const querystring = require('querystring');
 
-const {generateJwtToken} = require("../src/JWT_Helper.js");
+
 
 
 
 ////////////////////////////////////////////////////////////////////////////
 //                          User Login Handler >> Get
 ////////////////////////////////////////////////////////////////////////////
-const giveLoginAccess = AsyncHandler(async (req, res) => {
+const letUserLogin = AsyncHandler(async (req, res) => {
     const { redirectURL } = req.query;
 
     if (redirectURL != null) {
@@ -58,7 +60,7 @@ const giveLoginAccess = AsyncHandler(async (req, res) => {
 ////////////////////////////////////////////////////////////////////////////
 //                          User Login Handler >> Post
 ////////////////////////////////////////////////////////////////////////////
-const handleUserLogin = AsyncHandler(async (req, res, next) => {
+const doUserLogin = AsyncHandler(async (req, res, next) => {
     console.log("here")
     passport.authenticate('login',
         async (err, user, info) => {
@@ -95,10 +97,10 @@ const handleUserLogin = AsyncHandler(async (req, res, next) => {
 
 
 
-
-
-// Handling User LogOut
-function handleUserLogOut(req, res, next) {
+////////////////////////////////////////////////////////////////////////////
+//                          User Logout Handler >> Get
+////////////////////////////////////////////////////////////////////////////
+function doUserLogOut(req, res, next) {
     req.logout(function (err) {
         if (err) {
             return next(err)
@@ -109,75 +111,10 @@ function handleUserLogOut(req, res, next) {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////
-//                          Utility Functions
+//                    Verify SSO Token Given By Use >> Get
 ////////////////////////////////////////////////////////////////////////////
-const fillSSOTokenCache = (origin, userId, ssoToken) => {
-    SSO_TOKEN_CACHE[ssoToken] = [userId, ALLOWED_APPS_NAMES[origin]];
-}
-
-const storeAppInCache = (origin, userId, ssoToken) => {
-    if(APPS_SESSIONS[userId] == null){
-        APPS_SESSIONS[userId] = { [ALLOWED_APPS_NAMES[origin]]: true }; // why  [ AllowedAppNames[origin] ]
-    }
-    else{
-        APPS_SESSIONS[userId][ALLOWED_APPS_NAMES[origin]] = true;
-    }
-
-    console.log({...APPS_SESSIONS}, {...USER_SESSIONS}, {...SSO_TOKEN_CACHE});
-    fillSSOTokenCache(origin, userId, ssoToken);
-}
-
-
-//
-const parseAuthHeader = (hdrValue) => {
-    if(typeof hdrValue !== "string") return null;
-    const matches = hdrValue.match(HEADER_REG_EX);
-    return matches && {scheme: matches[1], value: matches[2]};
-}
-const fetchAuthHeaderByScheme = (authSheme) => {
-    const authSchemeLower = authSheme.toLowerCase();
-    return function(request){
-        let token = null;
-        if(request.headers[AUTH_HEADER]){
-            const authParams = parseAuthHeader(request.headers[AUTH_HEADER]);
-            console.log('authParams :>> ', authParams);
-
-            if(authParams && authSchemeLower === authParams.scheme.toLowerCase()){
-                token = authParams.value;
-            }
-        }
-
-        return token;
-    }
-}
-const fetchBearerTokenFromAuthHeader = function (){
-    return fetchAuthHeaderByScheme(BEARER_AUTH_SCHEME);
-}
-
-const fetchAppTokenFromRequest = fetchBearerTokenFromAuthHeader();
-
-const generatePayload = (ssoToken)=>{
-    return new Promise(async (resolve, reject)=>{
-        const globalSessionToken = SSO_TOKEN_CACHE[ssoToken][0];
-        const appName = SSO_TOKEN_CACHE[ssoToken][1];
-        const userEmail = USER_SESSIONS[globalSessionToken];
-        console.log("In genPayload ", userEmail, );
-        const user = await UserModel.findOne({email: userEmail});
-        console.log('user :>> ', user);
-        
-        if(!user){ 
-            console.log("In genPayload !user");
-            // throw new Api?Error(404, "User doesn't exist!!! ❌"); 
-            reject(user);
-        }
-
-        const payload = {userId: user._id.toString(), email: user.email};
-        // return payload;
-        resolve(payload);
-    })
-}
-
 const verifySSOToken = AsyncHandler(async (req, res, next) => {
     const appToken = fetchAppTokenFromRequest(req);
     const {ssoToken} = req.query;
@@ -224,12 +161,20 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 
 
 
+////////////////////////////////////////////////////////////////////////////
+//                    Let User SignUp >> Get     // Not used anywhere till now
+////////////////////////////////////////////////////////////////////////////
 const letSignUpUser = AsyncHandler(async (req, res, next) => {
     return res
     .status(200)
     .json(new ApiResponse(200, {}, "this is SignUp Page!"))
 });
 
+
+
+////////////////////////////////////////////////////////////////////////////
+//                    Let User SignUp >> Post
+////////////////////////////////////////////////////////////////////////////
 const doSignUpUser = AsyncHandler( async (req, res, next) => {
     passport.authenticate(
         'signup', 
@@ -260,11 +205,62 @@ const doSignUpUser = AsyncHandler( async (req, res, next) => {
 
 });
 
+
+
+////////////////////////////////////////////////////////////////////////////
+//                      User Login GOOGLE Strategy
+////////////////////////////////////////////////////////////////////////////
+const doGoogleUserLogin = AsyncHandler(async(req, res, next) => {
+    console.log("Inside doGoogleUserLogin()");
+    console.log("In doGoogleUserLogin() :>> req: ", req.query);
+
+    // Prepare the state parameter including the redirectURL
+    const state = querystring.stringify({ redirectURL: req.query.redirectURL });
+
+    passport.authenticate('google', {
+        scope: ['email', 'profile'],
+        state: state
+    })(req, res, next);
+});
+
+
+
+////////////////////////////////////////////////////////////////////////////
+//                      Google Auth Callback
+////////////////////////////////////////////////////////////////////////////
+const googleAuthCallback = AsyncHandler(async (req, res, next) => {
+    // Call passport.authenticate and pass in the parameters
+    passport.authenticate('google', 
+        { failureRedirect: '/' }, 
+        async (err, user, info) => {
+            if (err) { return next(err); }
+            if (!user) { return res.redirect('/'); }
+            
+            console.log("Inside googleAuthCallback()");
+            const state = querystring.parse(req.query.state);
+            const redirectURL = state.redirectURL;
+            console.log("redirectURL: ", redirectURL);
+            console.log('req.user :>> ', user);
+            console.log('req.session :>> ', info);
+
+            res.redirect(redirectURL || '/');
+        }
+    )(req, res, next);  // Note that we're invoking the middleware here
+})
+
+
+
+
+////////////////////////////////////////////////////////////////
+//                    Functions Export
+////////////////////////////////////////////////////////////////
 module.exports = {
-    giveLoginAccess,
-    handleUserLogin,
-    handleUserLogOut,
+    letUserLogin,
+    doUserLogin,
+    doUserLogOut,
     verifySSOToken,
     letSignUpUser,
-    doSignUpUser
+    doSignUpUser,
+    doGoogleUserLogin,
+    googleAuthCallback
 }

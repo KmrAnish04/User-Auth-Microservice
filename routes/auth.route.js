@@ -1,33 +1,44 @@
 const express = require('express');
-const passport = require('passport');
 const router = express.Router();
 const { 
-    handleUserLogin, 
-    giveLoginAccess, 
-    handleUserLogOut, 
+    letUserLogin, 
+    doUserLogin, 
+    doUserLogOut, 
     verifySSOToken,
     letSignUpUser,
-    doSignUpUser
-} = require('../controllers/auth.controller');
-
-router.route('/login')
-    .get(giveLoginAccess)
-    .post(handleUserLogin);
+    doSignUpUser,
+    doGoogleUserLogin,
+    googleAuthCallback
+} = require('../controllers/auth.controller.js');
 
 
+
+
+// User Register/Signup Route
 router.route('/signup')
     .get(letSignUpUser)
-    .post(doSignUpUser)
-
-    
-router.get('/verifySSOToken', verifySSOToken)
-
-router.post('/logout', handleUserLogOut);
+    .post(doSignUpUser);
 
 
-router.get('/google/login', passport.authenticate('google', { scope: ['email', 'profile']}))
-router.get('/google/callback', passport.authenticate('google',{successRedirect: '/Blogs',failureRedirect: '/'}));
+// User Login Route
+router.route('/login')
+    .get(letUserLogin)
+    .post(doUserLogin);
+
+
+// Verify SSO Token Route
+router.get('/verifySSOToken', verifySSOToken);
+
+
+// User Logout Route
+router.post('/logout', doUserLogOut);
+
+
+// Google Auth Routes
+router.get('/google/login', doGoogleUserLogin);
+router.get('/google/callback', googleAuthCallback);
 
 
 
+// Export Router
 module.exports = router;

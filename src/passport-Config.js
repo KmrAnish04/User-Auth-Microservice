@@ -7,6 +7,7 @@ const ExtractJWT = passportJWT.ExtractJwt;
 const {UserModel, GoogleUserModel} = require('../models/user.model.js');
 const ApiError = require("./utils/ApiError.js");
 require('dotenv').config();
+const {GOOGLE_AUTH_CALLBACK_URL} = require('./constants.js')
 
 
 // SignUp Middleware
@@ -82,23 +83,26 @@ passport.use(new JWTStrategy(
 passport.use(new GoogleStrategy({
         clientID: process.env.Google_Client_ID,
         clientSecret: process.env.Google_Client_Secret,
-        callbackURL: "http://localhost:3000/api/v1/auth/google/callback",
+        callbackURL: GOOGLE_AUTH_CALLBACK_URL,
         passReqToCallback: true
     },
     function (request, accessToken, refreshToken, profile, done) {
-        console.log({request, accessToken, refreshToken, profile});
-        GoogleUserModel.findOrCreate(
-            {
-                googleId: profile.id, 
-                email: profile.email,
-                name: profile.name,
-                displayName: profile.displayName,
-            }, 
-            function (err, user){
-                console.log("Saving Data For Google User!")
-                return done(err, user);
-            }
-    )}
+        // console.log({request, accessToken, refreshToken, profile});
+        // GoogleUserModel.findOrCreate(
+        //     {
+        //         googleId: profile.id, 
+        //         email: profile.email,
+        //         name: profile.name,
+        //         displayName: profile.displayName,
+        //     }, 
+        //     function (err, user){
+        //         console.log("Saving Data For Google User!")
+        //         return done(err, user);
+        //     }
+        // );
+
+        return done(null, {msg:"Thenga"}, "info khali");
+    }
 ));
 
 

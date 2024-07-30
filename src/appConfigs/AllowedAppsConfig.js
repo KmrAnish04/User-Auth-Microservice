@@ -1,8 +1,3 @@
-module.exports.HEADER_REG_EX = /(\S+)\s+(\S+)/;
-
-module.exports.AUTH_HEADER = "authorization";
-
-module.exports.BEARER_AUTH_SCHEME = "bearer";
 
 
 module.exports.ALLOWED_APPS_ORIGINS = {
