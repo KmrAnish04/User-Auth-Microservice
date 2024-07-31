@@ -51,7 +51,8 @@ const letUserLogin = AsyncHandler(async (req, res) => {
     }
 
     return res.render("loginUser", {
-        title: "SSO-Server | Login"
+        title: "SSO-Server | Login",
+        redirectURL // For Google Auth Button
     });
 });
 
@@ -231,19 +232,35 @@ const doGoogleUserLogin = AsyncHandler(async(req, res, next) => {
 const googleAuthCallback = AsyncHandler(async (req, res, next) => {
     // Call passport.authenticate and pass in the parameters
     passport.authenticate('google', 
-        { failureRedirect: '/' }, 
         async (err, user, info) => {
-            if (err) { return next(err); }
+            if (err) {
+                console.log("In google callback err", err); 
+                return next(err); 
+            }
             if (!user) { return res.redirect('/'); }
             
             console.log("Inside googleAuthCallback()");
             const state = querystring.parse(req.query.state);
             const redirectURL = state.redirectURL;
-            console.log("redirectURL: ", redirectURL);
-            console.log('req.user :>> ', user);
-            console.log('req.session :>> ', info);
 
-            res.redirect(redirectURL || '/');
+
+            console.log("redirectURL: ", redirectURL);
+            console.log('user :>> ', user);
+            console.log('info :>> ', info);
+            console.log('req.user :>> ', req.user);
+            console.log('req.session :>> ', req.session);
+
+
+            req.session.user = info.user._id.toString();
+            USER_SESSIONS[req.session.user] = info.user.email;
+
+            if(redirectURL == null) {return res.redirect("/")}
+
+            const url = new URL(redirectURL);
+            const ssoToken = encodedId();
+            storeAppInCache(url.origin, req.session.user, ssoToken);
+
+            return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);
         }
     )(req, res, next);  // Note that we're invoking the middleware here
 })

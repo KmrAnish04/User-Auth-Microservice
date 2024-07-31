@@ -88,20 +88,20 @@ passport.use(new GoogleStrategy({
     },
     function (request, accessToken, refreshToken, profile, done) {
         // console.log({request, accessToken, refreshToken, profile});
-        // GoogleUserModel.findOrCreate(
-        //     {
-        //         googleId: profile.id, 
-        //         email: profile.email,
-        //         name: profile.name,
-        //         displayName: profile.displayName,
-        //     }, 
-        //     function (err, user){
-        //         console.log("Saving Data For Google User!")
-        //         return done(err, user);
-        //     }
-        // );
+        GoogleUserModel.findOrCreate(
+            {
+                googleId: profile.id, 
+                email: profile.email,
+                name: profile.name,
+                displayName: profile.displayName,
+            }, 
+            function (err, user){
+                console.log("Saving Data For Google User!")
+                return done(err, {}, {user});
+            }
+        );
 
-        return done(null, {msg:"Thenga"}, "info khali");
+        // return done(null, {msg:"Thenga"}, "info khali");
     }
 ));
 
