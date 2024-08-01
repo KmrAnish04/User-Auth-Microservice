@@ -63,7 +63,9 @@ module.exports.storeAppInCache = (origin, userId, ssoToken) => {
         APPS_SESSIONS[userId][ALLOWED_APPS_NAMES[origin]] = true;
     }
 
-    console.log({...APPS_SESSIONS}, {...USER_SESSIONS}, {...SSO_TOKEN_CACHE});
+    console.log("APPS_SESSIONS", {...APPS_SESSIONS});
+    console.log("USER_SESSIONS", {...USER_SESSIONS});
+    console.log("SSO_TOKEN_CACHE", {...SSO_TOKEN_CACHE});
     fillSSOTokenCache(origin, userId, ssoToken);
 }
 
@@ -76,7 +78,7 @@ module.exports.generatePayload = (ssoToken)=>{
     return new Promise(async (resolve, reject)=>{
         const globalSessionToken = SSO_TOKEN_CACHE[ssoToken][0];
         const appName = SSO_TOKEN_CACHE[ssoToken][1];
-        const userEmail = USER_SESSIONS[globalSessionToken];
+        const userEmail = USER_SESSIONS[globalSessionToken].email;
         console.log("In genPayload ", userEmail, );
         const user = await UserModel.findOne({email: userEmail});
         console.log('user :>> ', user);

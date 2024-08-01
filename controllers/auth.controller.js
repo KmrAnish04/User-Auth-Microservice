@@ -4,7 +4,11 @@ const ApiError = require("../src/utils/ApiError.js");
 const ApiResponse = require("../src/utils/ApiResponse.js");
 const AsyncHandler = require("../src/utils/AsyncHandler.js");
 const {encodedId} = require("../src/utils/utility.js");
-const {generateJwtToken} = require("../src/JWT_Helper.js");
+const {
+    generateJwtToken,
+    generateAccessToken,
+    generateRefreshToken
+} = require("../src/JWT_Helper.js");
 const URL = require("url").URL;
 const {
     ALLOWED_APPS_ORIGINS, 
@@ -75,7 +79,7 @@ const doUserLogin = AsyncHandler(async (req, res, next) => {
                 const { redirectURL } = req.query;
                 // req.session.user = user._id;
                 req.session.user = user._id.toString();
-                USER_SESSIONS[req.session.user] = user.email;
+                USER_SESSIONS[req.session.user] = {email: user.email};
 
                 if(redirectURL == null){ return res.redirect("/"); }
 
@@ -119,15 +123,8 @@ function doUserLogOut(req, res, next) {
 const verifySSOToken = AsyncHandler(async (req, res, next) => {
     const appToken = fetchAppTokenFromRequest(req);
     const {ssoToken} = req.query;
-    console.log("here1");
-    console.log('appToken :>> ', appToken);
-    console.log('ssoToken :>> ', ssoToken);
-    console.log('SSO_TOKEN_CACHE :>> ', SSO_TOKEN_CACHE);
-    if(
-        appToken == null || 
-        ssoToken == null || 
-        SSO_TOKEN_CACHE[ssoToken] == null
-    ){
+    
+    if(appToken == null || ssoToken == null || SSO_TOKEN_CACHE[ssoToken] == null){
         console.log("here2");
         throw new ApiError(400, "Bad Request! ❌");
     }
@@ -138,20 +135,31 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
     if(
         appToken !== process.env[appName] ||
         APPS_SESSIONS[globalSessionToken][appName] !== true
-    ){
-        throw new ApiError(403, "Unauthorized Access ❌");
-    }
+    ){ throw new ApiError(403, "Unauthorized Access ❌"); }
+
 
     try {
         const payload = await generatePayload(ssoToken);
-        console.log("payload: ", payload)
-        const token = await generateJwtToken(payload);
-        console.log("token: ", token);
+
+        // Classic JWT Token
+        // const token = await generateJwtToken(payload);
+        // console.log("token: ", token);
+        
+        const accessToken = await generateAccessToken(payload);
+        const refreshToken = await generateRefreshToken({userId: payload.userId});
+        
+        const userId = SSO_TOKEN_CACHE[ssoToken][0];
+        USER_SESSIONS[userId]["accessToken"] = accessToken;
+        USER_SESSIONS[userId]["refreshToken"] = refreshToken;
+
+        console.log('USER_SESSIONS :>> ', USER_SESSIONS);
+        console.log('payload :>> ', payload);
+        
         delete SSO_TOKEN_CACHE[ssoToken]; // As we are proving it to user, no the token is of no use and deleteing it to avoid mis-use
 
         return res
         .status(200)
-        .json(new ApiResponse(200, {token}, "LoggedIn Successfully! ✅"));
+        .json(new ApiResponse(200, {accessToken, refreshToken}, "LoggedIn Successfully! ✅"));
         
     } catch (error) {
         console.log('error VerifySSOToken() :>> ', error);
@@ -252,7 +260,7 @@ const googleAuthCallback = AsyncHandler(async (req, res, next) => {
 
 
             req.session.user = info.user._id.toString();
-            USER_SESSIONS[req.session.user] = info.user.email;
+            USER_SESSIONS[req.session.user] = {email: info.user.email};
 
             if(redirectURL == null) {return res.redirect("/")}
 
