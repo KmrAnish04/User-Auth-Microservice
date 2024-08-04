@@ -4,10 +4,12 @@ const ApiError = require("../src/utils/ApiError.js");
 const ApiResponse = require("../src/utils/ApiResponse.js");
 const AsyncHandler = require("../src/utils/AsyncHandler.js");
 const {encodedId} = require("../src/utils/utility.js");
+const {UserModel} = require("../models/user.model.js");
 const {
     generateJwtToken,
     generateAccessToken,
-    generateRefreshToken
+    generateRefreshToken,
+    verifyRefreshToken
 } = require("../src/JWT_Helper.js");
 const URL = require("url").URL;
 const {
@@ -171,6 +173,54 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 
 
 ////////////////////////////////////////////////////////////////////////////
+//                          Update Access Token
+////////////////////////////////////////////////////////////////////////////
+const updateAuthTokens = AsyncHandler(async (req, res, next) => {
+    console.log("In updateAuthTokens()")
+    const userRefreshToken = req.body.refreshToken;
+    console.log('userRefreshToken :>> ', userRefreshToken);
+
+    if(!userRefreshToken){ throw new ApiError(401, "Unauthorized Request!!!")}
+    let decodedToken = null;
+
+    try {
+        decodedToken = await verifyRefreshToken(userRefreshToken, process.env.REFRESH_TOKEN_SECRET); 
+    } 
+    catch (error) {
+        console.log('error while verify refreshToken :>> ', error);
+        throw new ApiError(401, error.message?error.message:"Token Verification Faild!")
+    }
+
+    const userInLocalDB = USER_SESSIONS[decodedToken.userId];
+    console.log('userInLocalDB :>> ', userInLocalDB);
+    const userEmail = userInLocalDB.email;
+    const refreshTokenInDB = userInLocalDB.refreshToken
+    
+    if(userRefreshToken !== refreshTokenInDB){ throw new ApiError(401, "Refresh Token is expired or Not Valid!!!")}
+    
+    // const user = await User.findById(userId);
+    const user = await UserModel.findOne({email: userEmail});
+    if(!user){ throw new ApiError(401, "Invalid Refresh Token!!!")}
+    console.log('user in DB :>> ', user);
+    const payload = {userId: user._id.toString(), email: user.email};
+        
+    const newAccessToken = await generateAccessToken(payload);
+    USER_SESSIONS[decodedToken.userId]["accessToken"] = newAccessToken;
+
+
+    res.status(200)
+    .cookie("accessToken", newAccessToken, {httpOnly: true, secure: true})
+    .json(new ApiResponse(
+        200, 
+        { newAccessToken},
+        "Access Token Updated Successfully!!!✅"
+    ));
+
+});
+
+
+
+////////////////////////////////////////////////////////////////////////////
 //                    Let User SignUp >> Get     // Not used anywhere till now
 ////////////////////////////////////////////////////////////////////////////
 const letSignUpUser = AsyncHandler(async (req, res, next) => {
@@ -287,5 +337,6 @@ module.exports = {
     letSignUpUser,
     doSignUpUser,
     doGoogleUserLogin,
-    googleAuthCallback
+    googleAuthCallback,
+    updateAuthTokens
 }

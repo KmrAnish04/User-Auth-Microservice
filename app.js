@@ -40,6 +40,8 @@ app.use(passport.session());
 app.set('views', path.join(__dirname, 'views'));            // views directory setup
 app.set('view engine', 'ejs'); // view engine setup
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({limit: '16kb'}));
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logReqRes('log.txt'))                               // Custom Middleware
 // uncomment after placing your favicon in /public
