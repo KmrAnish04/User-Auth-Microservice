@@ -6,18 +6,12 @@ const AsyncHandler = require("../src/utils/AsyncHandler.js");
 const {encodedId} = require("../src/utils/utility.js");
 const {UserModel} = require("../models/user.model.js");
 const {
-    generateJwtToken,
     generateAccessToken,
     generateRefreshToken,
     verifyRefreshToken
 } = require("../src/JWT_Helper.js");
 const URL = require("url").URL;
-const {
-    ALLOWED_APPS_ORIGINS, 
-    APPS_SESSIONS, 
-    USER_SESSIONS, 
-    SSO_TOKEN_CACHE,
-} = require("../src/appConfigs/AllowedAppsConfig.js");
+
 const {
     fetchAppTokenFromRequest, 
     storeAppInCache, 
@@ -25,8 +19,7 @@ const {
 } = require('./utils.controller/utils.controller.js')
 const querystring = require('querystring');
 
-
-
+const {getDataFromRedis, setDataInRedis, deleteDataFromRedis} = require('./utils.controller/utils.controller.js');
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -37,7 +30,13 @@ const letUserLogin = AsyncHandler(async (req, res) => {
 
     if (redirectURL != null) {
         const url = new URL(redirectURL);
-        if (!ALLOWED_APPS_ORIGINS[url.origin]) {
+        const isAppAllowed = await getDataFromRedis(
+            'ALLOWED_APPS_ORIGINS',
+            url.origin
+        );
+        console.log('isAppAllowed :>> ', url.origin, isAppAllowed, typeof isAppAllowed);
+
+        if (!isAppAllowed) {
             throw new ApiError(401, "You are not allowed to access the sso-server ❌");
         }
     }
@@ -49,10 +48,10 @@ const letUserLogin = AsyncHandler(async (req, res) => {
     // If global session already has user then directly redirect with token
     if(req.session.user != null && redirectURL != null){
         const url = new URL(redirectURL);
-        console.log("encodedID: ", encodedId);
+        // console.log("encodedID: ", encodedId);
 
         const ssoToken = encodedId(); // Short Lived Token
-        storeAppInCache(url.origin, req.session.user, ssoToken);
+        await storeAppInCache(url.origin, req.session.user, ssoToken);
         return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);
     }
 
@@ -68,7 +67,7 @@ const letUserLogin = AsyncHandler(async (req, res) => {
 //                          User Login Handler >> Post
 ////////////////////////////////////////////////////////////////////////////
 const doUserLogin = AsyncHandler(async (req, res, next) => {
-    console.log("here")
+    // console.log("here")
     passport.authenticate('login',
         async (err, user, info) => {
             try {
@@ -79,20 +78,21 @@ const doUserLogin = AsyncHandler(async (req, res, next) => {
                 }
 
                 const { redirectURL } = req.query;
-                // req.session.user = user._id;
-                req.session.user = user._id.toString();
-                USER_SESSIONS[req.session.user] = {email: user.email};
+                const userId = user._id.toString();
+                req.session.user = userId
+
+                const StoreResult = await setDataInRedis(
+                    'USER_SESSIONS',
+                    userId,
+                    {"email": user.email}
+                );
+                console.log("Redis Result: ", StoreResult) 
 
                 if(redirectURL == null){ return res.redirect("/"); }
 
                 const url = new URL(redirectURL);
-                console.log("encodedID: ", encodedId);
                 const ssoToken = encodedId(); // Short Lived Token
-                storeAppInCache(url.origin, req.session.user, ssoToken);
-
-                console.log("Here after success!", info);
-                console.log('user :>> ', user);
-                console.log('req.session :>> ', req.session);
+                await storeAppInCache(url.origin, req.session.user, ssoToken);
 
                 return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);    
             } 
@@ -125,39 +125,56 @@ function doUserLogOut(req, res, next) {
 const verifySSOToken = AsyncHandler(async (req, res, next) => {
     const appToken = fetchAppTokenFromRequest(req);
     const {ssoToken} = req.query;
+
+    const ssoTokenCacheFromRedis = await getDataFromRedis('SSO_TOKEN_CACHE', ssoToken);
+    console.log('ssoTokenCacheFromRedis :>> ', ssoTokenCacheFromRedis);
     
-    if(appToken == null || ssoToken == null || SSO_TOKEN_CACHE[ssoToken] == null){
-        console.log("here2");
+    if(!appToken || !ssoToken || !ssoTokenCacheFromRedis){
+        console.log("In 400, Bad Request! ❌");
         throw new ApiError(400, "Bad Request! ❌");
     }
+    console.log("here 0");
+    const appName = ssoTokenCacheFromRedis[1]; // aap name
+    const globalSessionToken = ssoTokenCacheFromRedis[0]; // userId
+    console.log("here1");
 
-    const appName = SSO_TOKEN_CACHE[ssoToken][1];
-    const globalSessionToken = SSO_TOKEN_CACHE[ssoToken][0];
+    const appSessionFromRedis = await getDataFromRedis(
+        'APPS_SESSIONS',
+        globalSessionToken
+    );
+    console.log("here2");
+
 
     if(
         appToken !== process.env[appName] ||
-        APPS_SESSIONS[globalSessionToken][appName] !== true
+        appSessionFromRedis[appName] !== true
     ){ throw new ApiError(403, "Unauthorized Access ❌"); }
 
 
     try {
+        console.log("here3");
         const payload = await generatePayload(ssoToken);
-
-        // Classic JWT Token
-        // const token = await generateJwtToken(payload);
-        // console.log("token: ", token);
+        console.log('payload :>> ', payload);
         
         const accessToken = await generateAccessToken(payload);
         const refreshToken = await generateRefreshToken({userId: payload.userId});
-        
-        const userId = SSO_TOKEN_CACHE[ssoToken][0];
-        USER_SESSIONS[userId]["accessToken"] = accessToken;
-        USER_SESSIONS[userId]["refreshToken"] = refreshToken;
 
-        console.log('USER_SESSIONS :>> ', USER_SESSIONS);
-        console.log('payload :>> ', payload);
+        const UserSessionDataFromRedis = await getDataFromRedis('USER_SESSIONS', payload.userId);
+        console.log("wile stroing token : UserSessionDataFromRedis ::>> ", UserSessionDataFromRedis)
         
-        delete SSO_TOKEN_CACHE[ssoToken]; // As we are proving it to user, no the token is of no use and deleteing it to avoid mis-use
+        UserSessionDataFromRedis["accessToken"] = accessToken;
+        UserSessionDataFromRedis["refreshToken"] = refreshToken;
+
+        const setUserSessionDataInRedisResult = await setDataInRedis(
+            'USER_SESSIONS',
+            payload.userId,
+            UserSessionDataFromRedis
+        );
+
+        console.log("set result: ", setUserSessionDataInRedisResult)
+        
+        // or you can set feild expiry in redis
+        deleteDataFromRedis('SSO_TOKEN_CACHE', ssoToken); // As we are proving it to user, no the token is of no use and deleteing it to avoid mis-use
 
         return res
         .status(200)
@@ -191,8 +208,13 @@ const updateAuthTokens = AsyncHandler(async (req, res, next) => {
         throw new ApiError(401, error.message?error.message:"Token Verification Faild!")
     }
 
-    const userInLocalDB = USER_SESSIONS[decodedToken.userId];
-    console.log('userInLocalDB :>> ', userInLocalDB);
+    // const userInLocalDB = USER_SESSIONS[decodedToken.userId];
+    const userInLocalDB = await getDataFromRedis(
+        'USER_SESSIONS',
+        decodedToken.userId
+    )
+
+    // console.log('userInLocalDB :>> ', userInLocalDB);
     const userEmail = userInLocalDB.email;
     const refreshTokenInDB = userInLocalDB.refreshToken
     
@@ -201,12 +223,26 @@ const updateAuthTokens = AsyncHandler(async (req, res, next) => {
     // const user = await User.findById(userId);
     const user = await UserModel.findOne({email: userEmail});
     if(!user){ throw new ApiError(401, "Invalid Refresh Token!!!")}
-    console.log('user in DB :>> ', user);
+    // console.log('user in DB :>> ', user);
     const payload = {userId: user._id.toString(), email: user.email};
         
     const newAccessToken = await generateAccessToken(payload);
-    USER_SESSIONS[decodedToken.userId]["accessToken"] = newAccessToken;
 
+    // USER_SESSIONS[decodedToken.userId]["accessToken"] = newAccessToken;
+
+    const UserSessionDataFromRedis = await getDataFromRedis(
+        'USER_SESSIONS',
+        decodedToken.userId
+    );
+
+    UserSessionDataFromRedis["accessToken"] = newAccessToken;
+
+    const storeRedisRst = await setDataInRedis(
+        'USER_SESSIONS',
+        decodedToken.userId,
+        UserSessionDataFromRedis
+    );
+    console.log("Redis Data Store Result: ", storeRedisRst);
 
     res.status(200)
     .cookie("accessToken", newAccessToken, {httpOnly: true, secure: true})
@@ -302,21 +338,31 @@ const googleAuthCallback = AsyncHandler(async (req, res, next) => {
             const redirectURL = state.redirectURL;
 
 
-            console.log("redirectURL: ", redirectURL);
-            console.log('user :>> ', user);
-            console.log('info :>> ', info);
-            console.log('req.user :>> ', req.user);
-            console.log('req.session :>> ', req.session);
+            // console.log("redirectURL: ", redirectURL);
+            // console.log('user :>> ', user);
+            // console.log('info :>> ', info);
+            // console.log('req.user :>> ', req.user);
+            // console.log('req.session :>> ', req.session);
 
-
-            req.session.user = info.user._id.toString();
-            USER_SESSIONS[req.session.user] = {email: info.user.email};
+            const userId = info.user._id.toString();
+            req.session.user = userId;
+            
+            // USER_SESSIONS[userId] = {email: info.user.email};
+            const UserSessionDataFromRedis = await getDataFromRedis('USER_SESSIONS', userId);
+            UserSessionDataFromRedis["email"] = info.user.email;
+        
+            const storeRedisRst = await setDataInRedis(
+                'USER_SESSIONS',
+                userId,
+                UserSessionDataFromRedis
+            );
+            console.log("Redis Data Store Result: ", storeRedisRst);
 
             if(redirectURL == null) {return res.redirect("/")}
 
             const url = new URL(redirectURL);
             const ssoToken = encodedId();
-            storeAppInCache(url.origin, req.session.user, ssoToken);
+            await storeAppInCache(url.origin, req.session.user, ssoToken);
 
             return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);
         }

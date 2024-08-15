@@ -11,19 +11,20 @@
 9. SSO
 
 To Do:
-1. Add User Logout functionality
-2. Create middleware for protected routes (like jwt authenticate in Devfolio)
-3. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
-4. Make SSO Service with Google Auth Strategy
-5. Make User Register SSO Microservice Functionality
-6. Add Access ans Refresh Token Functionality
-7. Add Forgot Password Functionality
-8. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
-9. Integrate DB functions with other services. For example: if user likes the post then that like count 
-   should added in post model as well as user model in the MongoDB, so how to link these kind of tasks in case
-   of microservices.
-10. Bug Fixing, Testing and Handling Corner Cases
-11. Give Profile Photo upload feature while signup
+1. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
+2. Integrate DB functions with other services. For example: if user likes the post then that like count should added in post model as well as user model in the MongoDB, so how to link these kind of tasks in case. (Kafka, Event Driven Arch., Saga)
+3. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
+4. Add User Logout functionality
+5. Add Forgot Password Functionality of microservices.
+6. Link normal account and google account of same person, if he logs in with these two
+   accounts at different time, bcoz that time we will got to that from email that the 
+   same user using different accounts, so link both accounts.
+7. Add Access ans Refresh Token Functionality
+8. Make User Register SSO Microservice Functionality
+9.  Make SSO Service with Google Auth Strategy
+10. Create middleware for protected routes (like jwt authenticate in Devfolio)
+11. Bug Fixing, Testing and Handling Corner Cases
+12. Give Profile Photo upload feature while signup
 
 
 
