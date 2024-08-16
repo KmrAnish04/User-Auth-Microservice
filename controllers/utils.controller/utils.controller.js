@@ -1,11 +1,11 @@
 // ********************** Utility Functions **********************
-
 const {UserModel} = require('../../models/user.model.js');
 const {
     AUTH_HEADER,
     BEARER_AUTH_SCHEME,
     HEADER_REG_EX
 } = require('../../src/constants.js');
+
 const { getRedisClient } = require('../../src/RedisDB/redis.connection.js');
 
 
@@ -155,6 +155,8 @@ module.exports.getDataFromRedis = async (key, field) => {
     }
 }
 
+
+
 ////////////////////////////////////////////////////////////////////////////
 //                          Redis Delete Data
 ////////////////////////////////////////////////////////////////////////////
@@ -168,8 +170,9 @@ module.exports.deleteDataFromRedis = async (key, field) => {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////
-// Helper function to check if a string is JSON-stringified
+//         Helper function to check if a string is JSON-stringified
 ////////////////////////////////////////////////////////////////////////////
 function isJSONString(str) {
     if (typeof str !== 'string') { return false; }
