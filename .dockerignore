@@ -1,6 +1,5 @@
 # Ignore node_modules directory as it should be installed within the Docker container
 node_modules
-./node_modules
 
 # Ignore local environment configuration files
 .env
@@ -11,7 +10,7 @@ local.dev.credentials.txt
 log.txt
 
 # Ignore REDAME.md file
-REDAME.md
+README.md
 
 # Ignore Docker-related files
 Dockerfile

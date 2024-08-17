@@ -28,8 +28,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_URL=${DB_URL}
-      - REDIS_DB_URL=${REDIS_DB_URL}
+      - DB_URL=${DB_DOCKER_URL}
+      - REDIS_DB_URL=${REDIS_DB_DOCKER_URL}
       - sso_consumer=${sso_consumer}
       - local_consumer=${local_consumer}
       - singleSignOn_consumer=${singleSignOn_consumer}
