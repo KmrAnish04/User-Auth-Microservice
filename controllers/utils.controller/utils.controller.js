@@ -122,11 +122,11 @@ module.exports.setDataInRedis = async (key, field, value, ttlInSeconds = null) =
         );
 
         // If a TTL is provided, set the expiry time on the key
-        if (ttlInSeconds !== null) {
-            console.log(`setting expiry for ${key}:${field} for ${ttlInSeconds} sec. !!!⌛`)
-            console.log(RedisClient)
-            RedisClient.hexpire(key, ttlInSeconds, field);
-        }
+        // if (ttlInSeconds !== null) {
+        //     console.log(`setting expiry for ${key}:${field} for ${ttlInSeconds} sec. !!!⌛`)
+        //     console.log(RedisClient)
+        //     RedisClient.hexpire(key, ttlInSeconds, field);
+        // }
 
         return result;
     } 

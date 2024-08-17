@@ -14,7 +14,9 @@ module.exports.ALLOWED_APPS_NAMES = {
     "http://consumer.anishkmr.in:3020": "sso_consumer",
     "http://consumertwo.anishkmr.in:3030": "singleSignOn_consumer",
     "http://127.0.0.1:3020": "local_consumer",
-    "http://127.0.0.1:8000": "Anish_Devfolio"
+    "http://127.0.0.1:8000": "Anish_Devfolio",
+    "https://www.google.com": "Google_Page",
+
 };
 
 

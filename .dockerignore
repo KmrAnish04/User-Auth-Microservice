@@ -3,12 +3,15 @@ node_modules
 ./node_modules
 
 # Ignore local environment configuration files
-# .env
+.env
 .env.example
 local.dev.credentials.txt
 
 # Ignore logs
 log.txt
+
+# Ignore REDAME.md file
+REDAME.md
 
 # Ignore Docker-related files
 Dockerfile
