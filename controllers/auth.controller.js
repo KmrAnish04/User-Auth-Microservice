@@ -26,6 +26,10 @@ const {getDataFromRedis, setDataInRedis, deleteDataFromRedis} = require('./utils
 //                          User Login Handler >> Get
 ////////////////////////////////////////////////////////////////////////////
 const letUserLogin = AsyncHandler(async (req, res) => {
+    console.log("\n********************************");
+    console.log("Inside letUserLogin() :>> ");
+
+
     const { redirectURL } = req.query;
 
     if (redirectURL != null) {
@@ -41,15 +45,25 @@ const letUserLogin = AsyncHandler(async (req, res) => {
         }
     }
 
+    
+    console.log("req.session.user :>>" , req.session.user);
+    console.log("req.user :>>" , req.user);
+    console.log('redirectURL :>> ', redirectURL);
+    console.log("******************************** \n");
+
     if (req.session.user != null && redirectURL == null) {
         return res.redirect("/")
     }
 
     // If global session already has user then directly redirect with token
     if(req.session.user != null && redirectURL != null){
+        console.log("\n ********************************");
+        console.log("sub-Inside cond. :>> if(req.session.user != null && redirectURL != null) ");
+        console.log("req.session.user :>>" , req.session.user);
+        console.log('redirectURL :>> ', redirectURL);
+        console.log("******************************** \n");
+        
         const url = new URL(redirectURL);
-        // console.log("encodedID: ", encodedId);
-
         const ssoToken = encodedId(); // Short Lived Token
         await storeAppInCache(url.origin, req.session.user, ssoToken);
         return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);
@@ -67,7 +81,9 @@ const letUserLogin = AsyncHandler(async (req, res) => {
 //                          User Login Handler >> Post
 ////////////////////////////////////////////////////////////////////////////
 const doUserLogin = AsyncHandler(async (req, res, next) => {
-    // console.log("here")
+    console.log("\n\n ********************************************")
+    console.log("Inside doUserLogin() :>> ")
+
     passport.authenticate('login',
         async (err, user, info) => {
             try {
@@ -86,7 +102,7 @@ const doUserLogin = AsyncHandler(async (req, res, next) => {
                     userId,
                     {"email": user.email}
                 );
-                console.log("Redis Result: ", StoreResult) 
+                console.log("StoreResult: ", StoreResult) 
 
                 if(redirectURL == null){ return res.redirect("/"); }
 
@@ -94,6 +110,7 @@ const doUserLogin = AsyncHandler(async (req, res, next) => {
                 const ssoToken = encodedId(); // Short Lived Token
                 await storeAppInCache(url.origin, req.session.user, ssoToken);
 
+                console.log("******************************************** \n\n")
                 return res.redirect(`${redirectURL}?ssoToken=${ssoToken}`);    
             } 
             catch (error) { return next(error); }
@@ -123,27 +140,26 @@ function doUserLogOut(req, res, next) {
 //                    Verify SSO Token Given By Use >> Get
 ////////////////////////////////////////////////////////////////////////////
 const verifySSOToken = AsyncHandler(async (req, res, next) => {
+    // console.log("\n\n********************************************")
+    // console.log("Inside verifySSOToken() :>> ")
+
     const appToken = fetchAppTokenFromRequest(req);
     const {ssoToken} = req.query;
 
     const ssoTokenCacheFromRedis = await getDataFromRedis('SSO_TOKEN_CACHE', ssoToken);
-    console.log('ssoTokenCacheFromRedis :>> ', ssoTokenCacheFromRedis);
     
     if(!appToken || !ssoToken || !ssoTokenCacheFromRedis){
         console.log("In 400, Bad Request! ❌");
         throw new ApiError(400, "Bad Request! ❌");
     }
-    console.log("here 0");
+
     const appName = ssoTokenCacheFromRedis[1]; // aap name
     const globalSessionToken = ssoTokenCacheFromRedis[0]; // userId
-    console.log("here1");
 
     const appSessionFromRedis = await getDataFromRedis(
         'APPS_SESSIONS',
         globalSessionToken
     );
-    console.log("here2");
-
 
     if(
         appToken !== process.env[appName] ||
@@ -152,15 +168,13 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 
 
     try {
-        console.log("here3");
         const payload = await generatePayload(ssoToken);
-        console.log('payload :>> ', payload);
+        // console.log('payload :>> ', payload);
         
         const accessToken = await generateAccessToken(payload);
         const refreshToken = await generateRefreshToken({userId: payload.userId});
 
         const UserSessionDataFromRedis = await getDataFromRedis('USER_SESSIONS', payload.userId);
-        console.log("wile stroing token : UserSessionDataFromRedis ::>> ", UserSessionDataFromRedis)
         
         UserSessionDataFromRedis["accessToken"] = accessToken;
         UserSessionDataFromRedis["refreshToken"] = refreshToken;
@@ -171,8 +185,6 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
             UserSessionDataFromRedis
         );
 
-        console.log("set result: ", setUserSessionDataInRedisResult)
-        
         // or you can set feild expiry in redis
         deleteDataFromRedis('SSO_TOKEN_CACHE', ssoToken); // As we are proving it to user, no the token is of no use and deleteing it to avoid mis-use
 
@@ -193,9 +205,11 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 //                          Update Access Token
 ////////////////////////////////////////////////////////////////////////////
 const updateAuthTokens = AsyncHandler(async (req, res, next) => {
-    console.log("In updateAuthTokens()")
+    // console.log("\n\n********************************************")
+    // console.log("Inside updateAuthTokens()")
+
     const userRefreshToken = req.body.refreshToken;
-    console.log('userRefreshToken :>> ', userRefreshToken);
+    // console.log('userRefreshToken :>> ', userRefreshToken);
 
     if(!userRefreshToken){ throw new ApiError(401, "Unauthorized Request!!!")}
     let decodedToken = null;
@@ -208,27 +222,21 @@ const updateAuthTokens = AsyncHandler(async (req, res, next) => {
         throw new ApiError(401, error.message?error.message:"Token Verification Faild!")
     }
 
-    // const userInLocalDB = USER_SESSIONS[decodedToken.userId];
     const userInLocalDB = await getDataFromRedis(
         'USER_SESSIONS',
         decodedToken.userId
     )
 
-    // console.log('userInLocalDB :>> ', userInLocalDB);
     const userEmail = userInLocalDB.email;
     const refreshTokenInDB = userInLocalDB.refreshToken
     
     if(userRefreshToken !== refreshTokenInDB){ throw new ApiError(401, "Refresh Token is expired or Not Valid!!!")}
     
-    // const user = await User.findById(userId);
     const user = await UserModel.findOne({email: userEmail});
     if(!user){ throw new ApiError(401, "Invalid Refresh Token!!!")}
-    // console.log('user in DB :>> ', user);
     const payload = {userId: user._id.toString(), email: user.email};
         
     const newAccessToken = await generateAccessToken(payload);
-
-    // USER_SESSIONS[decodedToken.userId]["accessToken"] = newAccessToken;
 
     const UserSessionDataFromRedis = await getDataFromRedis(
         'USER_SESSIONS',
@@ -242,7 +250,6 @@ const updateAuthTokens = AsyncHandler(async (req, res, next) => {
         decodedToken.userId,
         UserSessionDataFromRedis
     );
-    console.log("Redis Data Store Result: ", storeRedisRst);
 
     res.status(200)
     .cookie("accessToken", newAccessToken, {httpOnly: true, secure: true})
@@ -306,8 +313,10 @@ const doSignUpUser = AsyncHandler( async (req, res, next) => {
 //                      User Login GOOGLE Strategy
 ////////////////////////////////////////////////////////////////////////////
 const doGoogleUserLogin = AsyncHandler(async(req, res, next) => {
+    console.log("\n\n*********************************************");
     console.log("Inside doGoogleUserLogin()");
-    console.log("In doGoogleUserLogin() :>> req: ", req.query);
+
+    // console.log("In doGoogleUserLogin() :>> req: ", req.query);
 
     // Prepare the state parameter including the redirectURL
     const state = querystring.stringify({ redirectURL: req.query.redirectURL });
@@ -324,6 +333,9 @@ const doGoogleUserLogin = AsyncHandler(async(req, res, next) => {
 //                      Google Auth Callback
 ////////////////////////////////////////////////////////////////////////////
 const googleAuthCallback = AsyncHandler(async (req, res, next) => {
+    console.log("\n\n*********************************************");
+    console.log("Inside googleAuthCallback()");
+
     // Call passport.authenticate and pass in the parameters
     passport.authenticate('google', 
         async (err, user, info) => {
@@ -333,21 +345,12 @@ const googleAuthCallback = AsyncHandler(async (req, res, next) => {
             }
             if (!user) { return res.redirect('/'); }
             
-            console.log("Inside googleAuthCallback()");
             const state = querystring.parse(req.query.state);
             const redirectURL = state.redirectURL;
-
-
-            // console.log("redirectURL: ", redirectURL);
-            // console.log('user :>> ', user);
-            // console.log('info :>> ', info);
-            // console.log('req.user :>> ', req.user);
-            // console.log('req.session :>> ', req.session);
 
             const userId = info.user._id.toString();
             req.session.user = userId;
             
-            // USER_SESSIONS[userId] = {email: info.user.email};
             const UserSessionDataFromRedis = await getDataFromRedis('USER_SESSIONS', userId);
             UserSessionDataFromRedis["email"] = info.user.email;
         
@@ -356,7 +359,6 @@ const googleAuthCallback = AsyncHandler(async (req, res, next) => {
                 userId,
                 UserSessionDataFromRedis
             );
-            console.log("Redis Data Store Result: ", storeRedisRst);
 
             if(redirectURL == null) {return res.redirect("/")}
 

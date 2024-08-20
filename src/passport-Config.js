@@ -23,7 +23,7 @@ passport.use(
                 const isUserExists = await UserModel.findOne({email}).select("-password");
                
                 if(isUserExists){
-                    console.log('isUserExists :>> ', isUserExists);
+                    // console.log('isUserExists :>> ', isUserExists);
                     throw new ApiError(405, "User Already Exists!")
                     // const error = new ApiError(405, "User Already Exists!")
                     // return cb(error, null);

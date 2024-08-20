@@ -25,7 +25,7 @@ const fetchAuthHeaderByScheme = (authSheme) => {
         let token = null;
         if(request.headers[AUTH_HEADER]){
             const authParams = parseAuthHeader(request.headers[AUTH_HEADER]);
-            console.log('authParams :>> ', authParams);
+            // console.log('authParams :>> ', authParams);
 
             if(authParams && authSchemeLower === authParams.scheme.toLowerCase()){
                 token = authParams.value;
@@ -58,8 +58,8 @@ const fillSSOTokenCache = async (origin, userId, ssoToken) => {
         30
     );
 
-    console.log("App Name: ", appNameFromRedis);
-    console.log("set sso token result: ", storeSSOTokenResult)
+    // console.log("App Name: ", appNameFromRedis);
+    // console.log("set sso token result: ", storeSSOTokenResult)
 }
 
 module.exports.storeAppInCache = async (origin, userId, ssoToken) => {
@@ -69,7 +69,7 @@ module.exports.storeAppInCache = async (origin, userId, ssoToken) => {
         userId,
         {[appNameInRedis]: true}
     );
-    console.log("storeAppInCache() Date Stored In Redis: ", storeRst);
+    // console.log("storeAppInCache() Date Stored In Redis: ", storeRst);
     fillSSOTokenCache(origin, userId, ssoToken);
 }
 
@@ -88,13 +88,13 @@ module.exports.generatePayload = (ssoToken)=>{
         const userSessionData = await this.getDataFromRedis('USER_SESSIONS', globalSessionToken);
         const userEmail = userSessionData.email;
         
-        console.log("In genPayload() ");
-        console.log('globalSessionToken :>> ', globalSessionToken);
-        console.log('userSessionData :>> ', userSessionData);
-        console.log('userEmail :>> ', userEmail);
+        // console.log("In genPayload() ");
+        // console.log('globalSessionToken :>> ', globalSessionToken);
+        // console.log('userSessionData :>> ', userSessionData);
+        // console.log('userEmail :>> ', userEmail);
 
         const user = await UserModel.findOne({email: userEmail});
-        console.log('user :>> ', user);
+        // console.log('user :>> ', user);
         
         if(!user){ 
             console.log("In genPayload !user");

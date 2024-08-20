@@ -11,14 +11,14 @@
 9. SSO
 
 To Do:
-1. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
-2. Integrate DB functions with other services. For example: if user likes the post then that like count should added in post model as well as user model in the MongoDB, so how to link these kind of tasks in case. (Kafka, Event Driven Arch., Saga)
-3. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
-4. Add User Logout functionality
-5. Add Forgot Password Functionality of microservices.
-6. Link normal account and google account of same person, if he logs in with these two
-   accounts at different time, bcoz that time we will got to that from email that the 
-   same user using different accounts, so link both accounts.
+1. Add User Logout functionality
+2. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
+3. Link normal account and google account of same person, if he logs in with these two accounts at different time, bcoz that time we will
+   got to that from email that the same user using different accounts, so link both accounts.
+4. Add Forgot Password Functionality of microservices.
+5. Shift data storage task from local to Database (Redis Cache) like SSO_TOKEN_CACHE, USER_SESSION, APP_SESSION, APP_TOKENS etc
+6. Integrate DB functions with other services. For example: if user likes the post then that like count should added in post model as well
+   as user model in the MongoDB, so how to link these kind of tasks in case. (Kafka, Event Driven Arch., Saga)
 7. Add Access ans Refresh Token Functionality
 8. Make User Register SSO Microservice Functionality
 9.  Make SSO Service with Google Auth Strategy
