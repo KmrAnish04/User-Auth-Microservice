@@ -32,4 +32,12 @@ function errorHandler () {
     }
 }
 
+// Sync Session
+function SyncSession(){
+    return (req, res, next)=>{
+        
+    }
+}
+
+
 module.exports = {logReqRes, catchErrors, errorHandler};

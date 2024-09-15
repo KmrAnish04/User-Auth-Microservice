@@ -10,7 +10,7 @@ async function connectRedisClient(dbURL) {
     if (!redisClient) {
         redisClient = createClient({ url: dbURL });
 
-        redisClient.on('error', (err) => console.error('Redis Client Error', err));
+        // redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
         try {
             await redisClient.connect();

@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 async function connectToMongoDB(dbURL){
-    console.log("mongo url: ", dbURL)
+    // console.log("mongo url: ", dbURL)
     return new Promise((resolve, reject)=>{
         mongoose.connect(dbURL)
         .then((res)=>{

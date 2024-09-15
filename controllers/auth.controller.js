@@ -5,21 +5,13 @@ const ApiResponse = require("../src/utils/ApiResponse.js");
 const AsyncHandler = require("../src/utils/AsyncHandler.js");
 const {encodedId} = require("../src/utils/utility.js");
 const {UserModel} = require("../models/user.model.js");
-const {
-    generateAccessToken,
-    generateRefreshToken,
-    verifyRefreshToken
-} = require("../src/JWT_Helper.js");
-const URL = require("url").URL;
-
-const {
-    fetchAppTokenFromRequest, 
-    storeAppInCache, 
-    generatePayload
-} = require('./utils.controller/utils.controller.js')
-const querystring = require('querystring');
-
+const {generateAccessToken, generateRefreshToken, verifyRefreshToken} = require("../src/JWT_Helper.js");
+const {fetchAppTokenFromRequest, storeAppInCache, generatePayload} = require('./utils.controller/utils.controller.js')
 const {getDataFromRedis, setDataInRedis, deleteDataFromRedis} = require('./utils.controller/utils.controller.js');
+const URL = require("url").URL;
+const querystring = require('querystring');
+const axios  = require('axios');
+
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -46,9 +38,10 @@ const letUserLogin = AsyncHandler(async (req, res) => {
     }
 
     
+    // console.log('redirectURL :>> ', redirectURL);
+    // console.log("req :>> ", req)
     console.log("req.session.user :>>" , req.session.user);
-    console.log("req.user :>>" , req.user);
-    console.log('redirectURL :>> ', redirectURL);
+    console.log("req.sessionID :>>" , req.sessionID);
     console.log("******************************** \n");
 
     if (req.session.user != null && redirectURL == null) {
@@ -124,15 +117,59 @@ const doUserLogin = AsyncHandler(async (req, res, next) => {
 ////////////////////////////////////////////////////////////////////////////
 //                          User Logout Handler >> Get
 ////////////////////////////////////////////////////////////////////////////
-function doUserLogOut(req, res, next) {
-    req.logout(function (err) {
-        if (err) {
-            return next(err)
-        };
-        console.log("User is Logging Out!")
-        res.redirect('/');
-    })
+async function doUserLogOut(req, res, next) {
+    const logoutURLs = {
+        "local_consumer": "http://127.0.0.1:3020/backchannel-logout",
+        "Anish_Devfolio": "http://127.0.0.1:8000/sso-auth/backchannel-logout"
+    };
+
+    console.log("\n\n***********************************************");
+    console.log("Inside doUserLogOut() :>> ");
+    
+    const userId = req.session.user;
+    const {redirectURL} = req.query;
+    if (!userId) {
+        return res.status(400).send('User session not found');
+    }
+    
+    console.log("Received Request To Logout User With UserID: ", userId);
+
+    // Access the session cookie
+    const sessionCookie = req.headers.cookie; // This retrieves all cookies, including the session cookie
+    console.log('sessionCookie :>> ', sessionCookie);
+    try {
+        const userAppSessions = await getDataFromRedis('APPS_SESSIONS', userId);
+
+        for (const appName in userAppSessions) {
+            if (userAppSessions[appName] && logoutURLs.hasOwnProperty(appName)) {
+                console.log(`${appName}: ${logoutURLs[appName]}`);
+                try {
+                    const logoutResponse = await axios.post(
+                        logoutURLs[appName], 
+                        {userId, sessionID: userAppSessions[appName]}
+                    );
+                    console.log('logoutResponse :>> ', logoutResponse.data);
+                } catch (error) {
+                    console.error(`Failed to log out from ${appName}: `, error.message);
+                }
+            }
+        }
+
+        req.session.user = null;
+        await deleteDataFromRedis('USER_SESSIONS', userId);
+        await deleteDataFromRedis('APPS_SESSIONS', userId);
+        
+        if(!redirectURL){
+            res.status(200).send('User logged out from all applications');
+        }
+       
+        res.redirect(redirectURL);  // Redirect the user to the provided redirectUrl after logout
+    } catch (error) {
+        console.error('Error during user logout process: ', error.message);
+        res.status(500).send('Failed to log out user');
+    }
 }
+
 
 
 
@@ -147,7 +184,9 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
     const {ssoToken} = req.query;
 
     const ssoTokenCacheFromRedis = await getDataFromRedis('SSO_TOKEN_CACHE', ssoToken);
-    
+    console.log('appToken :>> ', appToken);
+    console.log('ssoToken :>> ', ssoToken);
+    console.log('ssoTokenCacheFromRedis :>> ', ssoTokenCacheFromRedis);
     if(!appToken || !ssoToken || !ssoTokenCacheFromRedis){
         console.log("In 400, Bad Request! ❌");
         throw new ApiError(400, "Bad Request! ❌");
@@ -190,12 +229,56 @@ const verifySSOToken = AsyncHandler(async (req, res, next) => {
 
         return res
         .status(200)
-        .json(new ApiResponse(200, {accessToken, refreshToken}, "LoggedIn Successfully! ✅"));
+        .json(new ApiResponse(200, {accessToken, refreshToken, sid: req.sessionID}, "LoggedIn Successfully! ✅"));
         
     } catch (error) {
         console.log('error VerifySSOToken() :>> ', error);
         throw new ApiError(502, "Internal Server Error! ❌"); 
     }
+
+});
+
+
+
+////////////////////////////////////////////////////////////////////////////
+//          register/store the user sessionId of their app >> Post
+////////////////////////////////////////////////////////////////////////////
+const registerUserSessionIDFromApp = AsyncHandler(async (req, res, next) => {
+    console.log("in rsd")
+    const {userId, sessionID } = req.body;
+    
+    const appToken = fetchAppTokenFromRequest(req);
+
+    console.log('appToken :>> ', appToken);
+    if(!appToken || !process.env[appToken]){
+        throw new ApiError(400, "Bad Request! ❌");
+    }
+
+    const appName = process.env[appToken]; // aap name
+    const globalSessionToken = userId; // userId
+    console.log('userId :>> ', userId);
+    console.log('sessionID :>> ', sessionID);
+    const appSessionFromRedis = await getDataFromRedis(
+        'APPS_SESSIONS',
+        userId
+    );
+
+    if(
+        appToken !== process.env[appName] ||
+        !appSessionFromRedis[appName]
+    ){ throw new ApiError(403, "Unauthorized Access ❌"); }
+
+    appSessionFromRedis[appName] = sessionID;
+
+    await setDataInRedis(
+        'APPS_SESSIONS',
+        userId,
+        appSessionFromRedis
+    )
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {msg: "session stored successfully!"}, "session stored successfully!"))
 
 });
 
@@ -386,5 +469,6 @@ module.exports = {
     doSignUpUser,
     doGoogleUserLogin,
     googleAuthCallback,
-    updateAuthTokens
+    updateAuthTokens,
+    registerUserSessionIDFromApp
 }

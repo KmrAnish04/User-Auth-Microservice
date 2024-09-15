@@ -9,7 +9,8 @@ const {
     doSignUpUser,
     doGoogleUserLogin,
     googleAuthCallback,
-    updateAuthTokens
+    updateAuthTokens,
+    registerUserSessionIDFromApp
 } = require('../controllers/auth.controller.js');
 
 
@@ -27,8 +28,12 @@ router.route('/login').get(letUserLogin).post(doUserLogin);
 router.get('/verifySSOToken', verifySSOToken);
 
 
+// Register LoggedIn User App Session in SSO redis Session Store
+router.post('/register-sessionid', registerUserSessionIDFromApp);
+
+
 // User Logout Route
-router.post('/logout', doUserLogOut);
+router.get('/logout', doUserLogOut);
 
 
 // Google Auth Routes

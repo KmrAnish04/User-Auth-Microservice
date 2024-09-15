@@ -61,15 +61,19 @@ const fillSSOTokenCache = async (origin, userId, ssoToken) => {
     // console.log("App Name: ", appNameFromRedis);
     // console.log("set sso token result: ", storeSSOTokenResult)
 }
-
 module.exports.storeAppInCache = async (origin, userId, ssoToken) => {
+    console.log("\n\n************************************************");
+    console.log('Inside storeAppInCache() :>> ');
     const appNameInRedis = await this.getDataFromRedis('ALLOWED_APPS_NAMES', origin);
+    const appSessionFromRedis = await this.getDataFromRedis('APPS_SESSIONS', userId);
+    console.log("appSessionFromRedis :>> ", appSessionFromRedis);
+
     const storeRst = await this.setDataInRedis(
         'APPS_SESSIONS',
         userId,
-        {[appNameInRedis]: true}
+        appSessionFromRedis ? { ...appSessionFromRedis, [appNameInRedis]: true } : { [appNameInRedis]: true }
+
     );
-    // console.log("storeAppInCache() Date Stored In Redis: ", storeRst);
     fillSSOTokenCache(origin, userId, ssoToken);
 }
 
