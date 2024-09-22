@@ -72,3 +72,15 @@ To generate tokens for applications that need to access the authentication micro
 - **Command:**
   ```sh
   node ./src/generateAppTokens.js 
+
+## Architecture Diagram
+
+This diagram illustrates the Single Sign-On (SSO) architecture for my project. The system handles user authentication and session management across multiple applications, using Redis for session storage and Docker for containerization. It supports single logout and secure token-based authentication flow.
+
+### 1. Single Sing On
+
+![SSO Architecture](./Docs/SSO-Single_SignOn.svg)
+
+### 2. Single Logout
+
+![SSO Architecture](./Docs/SSO-Single_Logout.svg)
