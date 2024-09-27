@@ -79,7 +79,7 @@ This diagram illustrates the Single Sign-On (SSO) architecture for my project. T
 
 ### 1. Single Sing On
 
-![SSO Architecture](./Docs/SSO-Single_SignOn.svg)
+![SSO Architecture](./Docs/SSO_Login_H_2.gif)
 
 ### 2. Single Logout
 
