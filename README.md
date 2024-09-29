@@ -1,15 +1,3 @@
-
-// Auth/Authr Strategies
-1. Email Auth
-2. Phone Number Auth (OTP signIn/LogIn)
-3. Email OTP SignIn
-4. Google Auth
-5. Github Auth
-6. Twitter Auth
-7. Facebook Auth
-8. Instagram Auth
-9. SSO
-
 To Do:
 1. Add User Logout functionality
 2. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
