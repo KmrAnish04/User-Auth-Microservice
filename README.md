@@ -1,3 +1,18 @@
+## Architecture Diagram
+
+This diagram illustrates the Single Sign-On (SSO) architecture for my project. The system handles user authentication and session management across multiple applications, using Redis for session storage and Docker for containerization. It supports single logout and secure token-based authentication flow.
+
+### 1. Single Sing On
+
+![SSO Architecture](./Docs/Single-Sign-On_(SSO).gif)
+
+### 2. Single Logout
+
+![SSO Architecture](./Docs/Single-Sign-On_(SSO).gif)
+
+
+
+
 To Do:
 1. Add User Logout functionality
 2. Add Rate Limiter for those routes which can be misused like hitting login, like, or something submit buttons again and again. 
@@ -60,15 +75,3 @@ To generate tokens for applications that need to access the authentication micro
 - **Command:**
   ```sh
   node ./src/generateAppTokens.js 
-
-## Architecture Diagram
-
-This diagram illustrates the Single Sign-On (SSO) architecture for my project. The system handles user authentication and session management across multiple applications, using Redis for session storage and Docker for containerization. It supports single logout and secure token-based authentication flow.
-
-### 1. Single Sing On
-
-![SSO Architecture](./Docs/Single-Sign-On_(SSO).gif)
-
-### 2. Single Logout
-
-![SSO Architecture](./Docs/Single-Sign-On_(SSO).gif)
