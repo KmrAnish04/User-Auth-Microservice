@@ -1,50 +1,20 @@
-const express = require('express');
-const app = express();
-const path = require('path');
-const port = 3000;
+const connectToMongoDB = require('./src/db/connectMongoDB.js');
+const app = require("./app.js");
 
-// Custom Imports
-const passport = require('./src/passport');
-const UserAuthentication = require('./routes/auth');
-const UserAuthorization = require('./routes/register');
-const user = require('./routes/user')
+const PORT = process.env.PORT || 3000;
 
+(async function () {
+    try {
+        // First, connect to MongoDB
+        await connectToMongoDB(process.env.DB_URL);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+        await app.setupApp();
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-
-// Routes
-app.use('/auth', UserAuthentication);
-app.use('/register', UserAuthorization);
-app.user('/user', passport.authenticate('jwt', {session: false}, user));
-
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next){
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// error handler
-app.use(function(err, req, res, next){
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') == 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
-
-
-app.listen(port, ()=>{console.log(`Listening on port ${port}: http://localhost:3000/`);});
+        // Start the server
+        app.listen(PORT, () => {
+            console.log(`Listening on port ${PORT}: http://localhost:${PORT}/`);
+        });
+    } catch (err) {
+        console.error("Can't listen to the port, something went wrong!", err);
+    }
+})();
