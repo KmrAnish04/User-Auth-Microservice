@@ -4,9 +4,25 @@ jobs:
     tests:
         runs-on: ubuntu-latest
         steps:
-            - name: Clone Code On Github Ubuntu VM
-              uses: actions/checkout@v4
+            # - name: Manual Clone Code On Github Ubuntu VM
             #   run: |
             #     echo "Cloning Repo..."
             #     echo "${{toJson(github)}}"
             #     git clone https://github.com/${{github.repository}}.git
+            
+            - name: Auto Clone Code On Github Ubuntu VM
+              uses: actions/checkout@v4
+            
+            - name: Install Node 20
+              uses: actions/setup-node@v4
+              with:
+                node-version: 20
+            
+            - name: print node version
+              run: node -v
+            
+            - name: Install Dependencies
+              run: npm ci
+            
+            # - name: Run Tests
+            #   run: npm run test
