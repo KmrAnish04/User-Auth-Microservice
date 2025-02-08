@@ -4,8 +4,8 @@ jobs:
     tests:
         runs-on: ubuntu-latest
         steps:
-            - name: Get Code
+            - name: Clone Code On Github Ubuntu VM
               run: |
-                echo: "Cloning Repo..."
-                echo: "${{toJson(github)}}"
+                echo "Cloning Repo..."
+                echo "${{toJson(github)}}"
                 git clone https://github.com/${{github.repository}}.git
