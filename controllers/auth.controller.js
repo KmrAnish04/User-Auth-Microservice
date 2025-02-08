@@ -251,6 +251,7 @@ const registerUserSessionIDFromApp = AsyncHandler(async (req, res, next) => {
 
     console.log('appToken :>> ', appToken);
     if(!appToken || !process.env[appToken]){
+        console.log("In 400, Bad Request! ❌", appToken, process.env[appToken]);
         throw new ApiError(400, "Bad Request! ❌");
     }
 

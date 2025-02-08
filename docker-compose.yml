@@ -7,7 +7,7 @@ services:
     volumes:
       - mongo-data:/data/db
     ports:
-      - "27017:27017" 
+      - "27018:27017"
     restart: always 
 
   redis-stack:
@@ -17,14 +17,16 @@ services:
       - "6379:6379"
       - "8001:8001"
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - redis-data:/data
-      - redis-data:/var/lib/redis
 
   user-auth-server:
     build: .
-    container_name: user-auth-mics-docker-app
+    container_name: SSO-Auth-Server
     ports:
       - "3000:3000"
     environment:
@@ -35,13 +37,19 @@ services:
       - singleSignOn_consumer=${singleSignOn_consumer}
       - Anish_Devfolio=${Anish_Devfolio}
       - Google_Page=${Google_Page}
+      - KEY_WEMrm1j06ECrQ0NLGROXF6p2lxYy=${KEY_WEMrm1j06ECrQ0NLGROXF6p2lxYy}
+      - KEY_l1Q7zkOL59cRqWBkQ12ZiGVW2DBL=${KEY_l1Q7zkOL59cRqWBkQ12ZiGVW2DBL}
+      - KEY_NMLLXOJlpGtk5kxDL5kRSmR0jW5V=${KEY_NMLLXOJlpGtk5kxDL5kRSmR0jW5V}
+      - KEY_7mR15yxkwZfXZ8Znx8rWTJy9lOJ=${KEY_7mR15yxkwZfXZ8Znx8rWTJy9lOJ}
+      - KEY_WEMrm1j06ECrQ0NLGROXF6p2lxZa=${KEY_WEMrm1j06ECrQ0NLGROXF6p2lxZa} 
       - Google_Client_ID=${Google_Client_ID}
       - Google_Client_Secret=${Google_Client_Secret}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
-
     depends_on:
-      - mongodb
-      - redis-stack
+      mongodb:
+        condition: service_started
+      redis-stack:
+        condition: service_healthy
 
 volumes:
   mongo-data: 

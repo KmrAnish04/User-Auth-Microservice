@@ -26,6 +26,7 @@ const app = express();
 app.setupApp = async () => {
 
     const RedisClient = await connectRedisClient(process.env.REDIS_DB_URL);
+    // await connectRedisClient(process.env.REDIS_DB_DOCKER_URL);
     
     // ********************************* Setup Passport Middlewares *********************************
     app.use(session({
@@ -67,16 +68,16 @@ app.setupApp = async () => {
         //     }
         // });
 
-        getRedisSessionStore().set(`my-prefix:${'anishapp: ' + req.sessionID}`, req.session, (err, data)=>{
-            console.log("start");
-            console.log("err: ", err);
-            console.log("data: ", data)
-            console.log("end");
-        })
+        // getRedisSessionStore().set(`my-prefix:${'anishapp: ' + req.sessionID}`, req.session, (err, data)=>{
+        //     console.log("start");
+        //     console.log("err: ", err);
+        //     console.log("data: ", data)
+        //     console.log("end");
+        // })
 
-        console.log("Logs from /");
-        console.log("req :>> ", req.session);
-        console.log("req.sessionID :>> ", req.sessionID);
+        // console.log("Logs from /");
+        // console.log("req :>> ", req.session);
+        // console.log("req.sessionID :>> ", req.sessionID);
         
         // await getRedisSessionStore().get("BcQR5VeL8EbFOpX4Cmd14IkL8Pu6goLu", (err, data)=>{
         //     console.log("start");
@@ -84,7 +85,7 @@ app.setupApp = async () => {
         //     console.log("data: ", data)
         //     console.log("end");
         // });
-        res.json({msg: "Hey Hii ✋, You're at Home Page!"})
+    res.json({msg: "SSO Microservice is up & running ✅"})
     })
 
 

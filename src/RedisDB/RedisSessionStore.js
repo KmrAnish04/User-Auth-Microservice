@@ -9,11 +9,6 @@ function getRedisSessionStore(redisClient) {
             client: RedisClient,
             // prefix: "my-auth-misc-app:",
         });
-
-
-        // redisSessionStore.set = (sid, sessionData, (err, data)=>{
-            
-        // })
     }
     return redisSessionStore;
 }

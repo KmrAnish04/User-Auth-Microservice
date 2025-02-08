@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
     try {
         // First, connect to MongoDB
         await connectToMongoDB(process.env.DB_URL);
+        // await connectToMongoDB(process.env.DB_DOCKER_URL);
 
         await app.setupApp();
 

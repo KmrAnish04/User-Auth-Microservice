@@ -4,7 +4,16 @@
   "description": "User Authentication/Authorization Microsercie ",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon",
+    "docker:build": "docker-compose build",
+    "docker:buildNstart": "docker-compose up -d --build", 
+    "docker:start": "docker-compose start",
+    "docker:stop": "docker-compose stop",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+
+    "docker:restart": "docker-compose down && docker-compose up -d --build"
+
   },
   "repository": {
     "type": "git",
