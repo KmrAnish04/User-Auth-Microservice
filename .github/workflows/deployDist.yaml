@@ -5,7 +5,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Clone Code On Github Ubuntu VM
-              run: |
-                echo "Cloning Repo..."
-                echo "${{toJson(github)}}"
-                git clone https://github.com/${{github.repository}}.git
+              uses: actions/checkout@v4
+            #   run: |
+            #     echo "Cloning Repo..."
+            #     echo "${{toJson(github)}}"
+            #     git clone https://github.com/${{github.repository}}.git
