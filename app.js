@@ -4,7 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session =  require("express-session");
 const { connectRedisClient } = require('./src/RedisDB/redis.connection.js');
-const getRedisSessionStore = require('./src/RedisDB/RedisSessionStore.js')
+const SSOAuthServerConfig = require('./src/config.js');
+
 
 
 // ********************************* Custom Imports *********************************
@@ -25,7 +26,7 @@ const app = express();
 
 app.setupApp = async () => {
 
-    const RedisClient = await connectRedisClient(process.env.REDIS_DB_URL);
+    const RedisClient = await connectRedisClient(SSOAuthServerConfig.redisDB.path);
     // await connectRedisClient(process.env.REDIS_DB_DOCKER_URL);
     
     // ********************************* Setup Passport Middlewares *********************************

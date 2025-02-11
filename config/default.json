@@ -1,0 +1,26 @@
+{
+    "port": "PORT",
+	"environment": "NODE_ENV",
+
+	"MongoDBPath": "MONGO_DB_URL",
+    "RedisDBPath": "REDIS_DB_URL",
+
+	"GOOGLE_CLIENT_ID": "Google_Client_ID",
+	"GOOGLE_SECRET": "Google_Client_Secret",
+    "REFRESH_TOKEN_SECRET": "REFRESH_TOKEN_SECRET",	
+    
+
+    "sso_consumer": "KEY_WEMrm1j06ECrQ0NLGROXF6p2lxYy",
+    "local_consumer": "KEY_l1Q7zkOL59cRqWBkQ12ZiGVW2DBL",
+    "singleSignOn_consumer": "KEY_NMLLXOJlpGtk5kxDL5kRSmR0jW5V",
+    "Anish_Devfolio": "KEY_7mR15yxkwZfXZ8Znx8rWTJy9lOJ",
+    "Google_Page": "KEY_WEMrm1j06ECrQ0NLGROXF6p2lxZa",
+
+
+    "KEY_WEMrm1j06ECrQ0NLGROXF6p2lxYy": "sso_consumer",
+    "KEY_l1Q7zkOL59cRqWBkQ12ZiGVW2DBL": "local_consumer",
+    "KEY_NMLLXOJlpGtk5kxDL5kRSmR0jW5V": "singleSignOn_consumer",
+    "KEY_7mR15yxkwZfXZ8Znx8rWTJy9lOJ": "Anish_Devfolio",
+    "KEY_WEMrm1j06ECrQ0NLGROXF6p2lxZa": "Google_Page"
+
+}
