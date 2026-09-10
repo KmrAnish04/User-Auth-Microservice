@@ -132,3 +132,5 @@ dist
 !.vscode/extensions.json
 
 # End
+# Local credentials
+local.dev.credentials.txt
