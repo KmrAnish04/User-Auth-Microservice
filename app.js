@@ -18,6 +18,7 @@ require('./src/passport-Config');
 // ********************************* Routes Imports ************************************************
 const userAuthRoute = require('./routes/auth.route.js');
 const user = require('./routes/user.route.js');
+const healthRoute = require('./routes/health.route.js');
 
 
 
@@ -57,6 +58,7 @@ app.setupApp = async () => {
     // ********************************* Routes *********************************
     app.use('/api/v1/auth', userAuthRoute);
     app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);
+    app.use('/api/v1/health', healthRoute);
 
 
     app.get('/', async function(req, res, next) {
