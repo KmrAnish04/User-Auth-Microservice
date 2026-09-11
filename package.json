@@ -4,6 +4,9 @@
   "description": "User Authentication/Authorization Microsercie ",
   "main": "server.js",
   "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "start": "node server.js",
     "st": "env-cmd -f .env.local printenv",
     "start:dev": "env-cmd -f .env.development npx nodemon server.js",
     "start:local": "env-cmd -f .env.local npx nodemon server.js",
@@ -45,9 +48,12 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "redis": "^4.7.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "jest": "^30.5.1",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.2.2"
   }
 }
