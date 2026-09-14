@@ -4,16 +4,18 @@
   "description": "User Authentication/Authorization Microsercie ",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon",
+    "st": "env-cmd -f .env.local printenv",
+    "start:dev": "env-cmd -f .env.development npx nodemon server.js",
+    "start:local": "env-cmd -f .env.local npx nodemon server.js",
+    "start:prod": "env-cmd -f .env.production node server.js",
+    "start:staging": "env-cmd -f .env.staging node server.js",
     "docker:build": "docker-compose build",
-    "docker:buildNstart": "docker-compose up -d --build", 
+    "docker:buildNstart": "docker-compose up -d --build",
     "docker:start": "docker-compose start",
     "docker:stop": "docker-compose stop",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-
     "docker:restart": "docker-compose down && docker-compose up -d --build"
-
   },
   "repository": {
     "type": "git",
@@ -28,9 +30,10 @@
   "dependencies": {
     "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
     "connect-redis": "^7.1.1",
-    "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
+    "env-cmd": "^10.1.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "hashids": "^2.3.0",

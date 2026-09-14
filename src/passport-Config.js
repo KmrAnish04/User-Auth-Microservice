@@ -6,7 +6,7 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const {UserModel, GoogleUserModel} = require('../models/user.model.js');
 const ApiError = require("./utils/ApiError.js");
-require('dotenv').config();
+const SSOAuthServerConfig = require('./config.js')
 const {GOOGLE_AUTH_CALLBACK_URL} = require('./constants.js')
 
 
@@ -81,8 +81,8 @@ passport.use(new JWTStrategy(
 
 // Google Login Middleware
 passport.use(new GoogleStrategy({
-        clientID: process.env.Google_Client_ID,
-        clientSecret: process.env.Google_Client_Secret,
+        clientID: SSOAuthServerConfig.secrets.GClientID,
+        clientSecret: SSOAuthServerConfig.secrets.GClientSecret,
         callbackURL: GOOGLE_AUTH_CALLBACK_URL,
         passReqToCallback: true
     },

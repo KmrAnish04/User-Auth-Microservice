@@ -1,12 +1,13 @@
 const connectToMongoDB = require('./src/db/connectMongoDB.js');
+const SSOAuthServerConfig = require('./src/config.js');
 const app = require("./app.js");
 
-const PORT = process.env.PORT || 3000;
+const PORT = SSOAuthServerConfig.app.port;
 
 (async function () {
     try {
         // First, connect to MongoDB
-        await connectToMongoDB(process.env.DB_URL);
+        await connectToMongoDB(SSOAuthServerConfig.mongoDB.path);
         // await connectToMongoDB(process.env.DB_DOCKER_URL);
 
         await app.setupApp();
