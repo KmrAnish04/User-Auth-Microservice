@@ -4,18 +4,25 @@
   "description": "User Authentication/Authorization Microsercie ",
   "main": "server.js",
   "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "start": "node server.js",
     "st": "env-cmd -f .env.local printenv",
     "start:dev": "env-cmd -f .env.development npx nodemon server.js",
     "start:local": "env-cmd -f .env.local npx nodemon server.js",
     "start:prod": "env-cmd -f .env.production node server.js",
     "start:staging": "env-cmd -f .env.staging node server.js",
-    "docker:build": "docker-compose build",
-    "docker:buildNstart": "docker-compose up -d --build",
     "docker:start": "docker-compose start",
-    "docker:stop": "docker-compose stop",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:restart": "docker-compose down && docker-compose up -d --build"
+    
+    "docker:restart": "docker-compose down && docker-compose up -d --build",
+    "docker:build": "docker build -t sso-auth-microservice:latest .",
+    "docker:build:prod": "docker build -t sso-auth-microservice:prod --target production .",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:stop": "docker-compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker-compose -f docker-compose.prod.yml logs -f app",
+    "docker:clean": "docker system prune -af --volumes"
   },
   "repository": {
     "type": "git",
@@ -30,24 +37,32 @@
   "dependencies": {
     "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
+    "compression": "^1.8.2",
     "config": "^3.3.12",
     "connect-redis": "^7.1.1",
     "ejs": "^3.1.9",
     "env-cmd": "^10.1.0",
     "express": "^4.19.2",
+    "express-rate-limit": "^8.7.0",
     "express-session": "^1.18.0",
     "hashids": "^2.3.0",
+    "helmet": "^8.3.0",
+    "joi": "^18.2.9",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.1",
     "mongoose-findorcreate": "^4.0.0",
+    "morgan": "^1.12.1",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "redis": "^4.7.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "jest": "^30.5.1",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.2.2"
   }
 }
