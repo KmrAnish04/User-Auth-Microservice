@@ -15,6 +15,12 @@ on:
         type: boolean
         default: false
 
+# ADD THESE LINES HERE (after "on" section, before "env")
+permissions:
+  contents: read          # Read repo contents
+  security-events: write  # Write to Security tab
+  actions: read          # Read Actions status
+
 env:
   DOCKER_IMAGE: anish123/sso-auth-microservice
   NODE_VERSION: '20'
@@ -164,7 +170,7 @@ jobs:
           exit-code: '0'  # Don't fail build yet (learning mode)
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
