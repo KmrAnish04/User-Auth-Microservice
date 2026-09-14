@@ -236,20 +236,40 @@ jobs:
     runs-on: ubuntu-latest
     needs: push
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.deploy_to_ec2 == true
-    environment:
-      name: production
-      url: http://${{ secrets.EC2_HOST }}:3000
+    # environment:
+    #   name: production
+    #   url: http://${{ secrets.EC2_HOST }}:3000
 
     steps:
-      - name: Deploy placeholder
+      - name: Check if deployment is enabled
+        id: check
         run: |
-          echo "🚀 Deployment to EC2 will be configured in Phase 4"
-          echo "For now, this job is skipped"
+          echo "🚀 Deployment stage reached"
+          echo "This will be configured in Phase 4"
+          echo ""
+          echo "deploy_enabled=false" >> $GITHUB_OUTPUT
+
+      - name: Deploy placeholder
+        if: steps.check.outputs.deploy_enabled == 'true'
+        run: |
+          echo "Deploying to EC2..."
+          echo "EC2 Host: (will be configured in Phase 4)"
+          # In Phase 4, we'll add:
+          # - SSH connection to EC2
+          # - Docker pull latest image
+          # - Update docker-compose.yml
+          # - Docker compose up -d
+          # - Health check verification
+
+      - name: Deployment skipped
+        if: steps.check.outputs.deploy_enabled != 'true'
+        run: |
+          echo "⏭️ Deployment skipped (Phase 4 not started yet)"
           echo ""
           echo "In Phase 4, this will:"
-          echo "  1. SSH to EC2"
+          echo "  1. SSH to EC2 using secrets.EC2_HOST"
           echo "  2. Pull new Docker image"
-          echo "  3. Update docker-compose.yml"
+          echo "  3. Update docker-compose.yml with new tag"
           echo "  4. Restart containers"
           echo "  5. Run health checks"
           echo "  6. Rollback if unhealthy"
