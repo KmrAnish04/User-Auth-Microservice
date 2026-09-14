@@ -1,34 +1,82 @@
-# Ignore node_modules directory as it should be installed within the Docker container
+# Dependencies (will be installed in container)
 node_modules
-
-# Ignore local environment configuration files
-.env
-.env.example
-local.dev.credentials.txt
-
-# Ignore logs
-log.txt
-
-# Ignore REDAME.md file
-README.md
-
-# Ignore Docker-related files
-Dockerfile
-.dockerignore
-docker-compose.yml
-
-# Ignore the git repository and other version control files
-.git
-.gitignore
-
-# Ignore editor-specific files and folders
-.vscode
-
-# Ignore build artifacts
-dist
-build
-
-# Ignore npm debug log
 npm-debug.log
 yarn-error.log
-.pnpm-debug.log
+yarn.lock
+.pnpm-debug.log*
+
+# Environment files (NEVER include in image)
+.env*
+!.env.example
+local.dev.credentials.txt
+
+# Git files
+.git
+.gitignore
+.gitattributes
+.github
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Docker files (don't copy into image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+docs
+Docs
+*.md
+!package.md
+
+# Logs
+logs
+*.log
+log.txt
+
+# Test files
+tests
+test
+*.test.js
+*.spec.js
+coverage
+.nyc_output
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Build artifacts
+dist
+build
+tmp
+temp
+
+# Private keys and credentials (CRITICAL)
+*.key
+*.pem
+*.p12
+*.pfx
+*.cert
+*.crt
+config/keys/*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Misc
+.cache
+.npm
+.eslintcache

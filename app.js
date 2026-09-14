@@ -5,6 +5,11 @@ const bodyParser = require('body-parser');
 const session =  require("express-session");
 const { connectRedisClient } = require('./src/RedisDB/redis.connection.js');
 const SSOAuthServerConfig = require('./src/config.js');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
+const logger = require('./src/utils/logger.js');
 
 
 
@@ -19,6 +24,7 @@ require('./src/passport-Config');
 const userAuthRoute = require('./routes/auth.route.js');
 const user = require('./routes/user.route.js');
 const healthRoute = require('./routes/health.route.js');
+const { write } = require('fs');
 
 
 
@@ -49,16 +55,39 @@ app.setupApp = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.json({limit: '16kb'}));
     app.use(express.static(path.join(__dirname, 'public')));
-    app.use(logReqRes('log.txt'))                               // Custom Middleware
+    
     // uncomment after placing your favicon in /public
     //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+    
+    // app.use(logReqRes('log.txt')) // Custom logger Middleware
+    const morganStream = {write: (message) => logger.http(message.trim())};
+    app.use(morgan('combined', {stream: morganStream}));
+    // app.use(morgan('dev', {stream: morganStream}));
+    
+    // Security: Set security HTTP headers
+    app.use(helmet({
+        contentSecurityPolicy: false, // Disable CSP for now (EJS templates need configuration)
+        crossOriginEmbedderPolicy: false // Allow embedding for OAuth flows
+    }))
+
+    // Performance: Compress responses
+    app.use(compression());
+
+    // Rate limiting for auth endpoints
+    const authLimiter = rateLimit({
+        windowMs: 1 * 60 * 1000, // 15 minutes
+        max: 3, // Limit each IP to 100 requests per windowMs
+        message: 'Too many requests from this IP, please try again later.',
+        standardHeaders: true,
+        legacyHeaders: false,
+    });
 
 
 
     // ********************************* Routes *********************************
-    app.use('/api/v1/auth', userAuthRoute);
+    app.use('/api/v1/auth', authLimiter, userAuthRoute);
     app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);
-    app.use('/api/v1/health', healthRoute);
+    app.use('/api/v1/health', authLimiter, healthRoute);
 
 
     app.get('/', async function(req, res, next) {
@@ -88,7 +117,7 @@ app.setupApp = async () => {
         //     console.log("data: ", data)
         //     console.log("end");
         // });
-    res.json({msg: "SSO Microservice is up & running ✅"})
+        res.json({msg: "SSO Microservice is up & running ✅"})
     })
 
 

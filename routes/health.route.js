@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
         // TODO: Add MongoDB health check (will do after we add proper connection status tracking)
         // TODO: Add Redis health check (will do after we add proper connection status tracking)
 
+        // await new Promise(resolve => setTimeout(resolve, 20000));
         res.status(200).json(healthcheck);
     } catch (error) {
         const healthcheck = {
