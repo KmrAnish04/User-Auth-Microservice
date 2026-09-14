@@ -22,7 +22,7 @@ permissions:
   actions: read          # Read Actions status
 
 env:
-  DOCKER_IMAGE: anish123/sso-auth-microservice
+  DOCKER_IMAGE: anish04kmr/sso-auth-microservice
   NODE_VERSION: '20'
 
 jobs:
