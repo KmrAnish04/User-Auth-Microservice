@@ -66,6 +66,8 @@ services:
       - "3000:3000"
     env_file:
       - .env.production
+    volumes:
+      - ./config/keys:/app/config/keys:ro
     networks:
       - sso-network
     depends_on:
