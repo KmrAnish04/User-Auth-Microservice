@@ -1,52 +1,53 @@
 ---
 inclusion: auto
 name: Security and Secrets Policy
-description: Rules for handling secrets, passwords, IPs, and sensitive data
+description: Rules for handling secrets, passwords, and sensitive data
 ---
 
 # Security and Secrets Policy
 
-## ❌ NEVER INCLUDE IN CODE OR DOCUMENTATION:
+## CRITICAL RULES - NEVER VIOLATE
 
-1. **Secrets & Passwords:**
-   - Redis passwords
-   - MongoDB passwords
-   - JWT private keys
-   - API keys or tokens
-   - OAuth client secrets
+### 1. NO SECRETS IN CODE OR DOCUMENTATION
+- ❌ NEVER write actual passwords, API keys, or secrets in ANY file
+- ❌ NEVER commit real Redis passwords, MongoDB passwords, JWT keys
+- ❌ NEVER put secrets in documentation, README, or markdown files
+- ❌ NEVER put secrets in code comments or commit messages
 
-2. **Infrastructure Details:**
-   - EC2 public IPs (Elastic IPs)
-   - EC2 private IPs
-   - Instance IDs
-   - SSH key names or content
-   - Security group IDs
+### 2. USE PLACEHOLDERS ONLY
+- ✅ Use: `REDIS_PASSWORD=<your-secure-password-here>`
+- ✅ Use: `MONGO_PASSWORD=<your-mongo-atlas-password>`
+- ✅ Use: `JWT_PRIVATE_KEY=<content-of-your-private-key>`
+- ✅ Use: `API_KEY=<your-api-key-from-provider>`
 
-3. **Service Identifiers:**
-   - MongoDB cluster URLs (with usernames)
-   - Docker Hub usernames in examples
-   - Actual database names with sensitive context
+### 3. ENVIRONMENT VARIABLES
+- All secrets MUST be in `.env` files (already in .gitignore)
+- Never suggest committing `.env*` files
+- Always verify `.gitignore` includes sensitive files
 
-## ✅ ALWAYS USE PLACEHOLDERS:
+### 4. DOCUMENTATION
+- In troubleshooting guides, use generic examples
+- Show directory structure, not file contents with secrets
+- Teach users HOW to set secrets, not provide actual values
 
-- `<your-ec2-public-ip>` instead of actual IP
-- `<your-elastic-ip>` instead of Elastic IP
-- `<your-redis-password>` instead of actual password
-- `<your-mongo-username>` instead of actual username
-- `<your-cluster-url>` instead of actual cluster URL
-- `<your-private-key-content>` instead of actual keys
+### 5. IF VIOLATION OCCURS
+- Immediately alert the user
+- Guide secret rotation process
+- Update all affected systems
+- Revoke compromised credentials
 
-## 📋 DOCUMENTATION RULES:
+## Files That Should NEVER Contain Secrets
+- `README.md`
+- `docs/**/*.md`
+- `*.js`, `*.ts`, `*.py` (source code)
+- `.github/workflows/*.yaml` (except encrypted secrets)
+- Any file tracked by git (except `.env.example` with placeholders)
 
-1. Show STRUCTURE, not VALUES
-2. Use generic examples
-3. Teach HOW to get/set values, not provide them
-4. If user provides secrets in chat, acknowledge but don't echo them back
-
-## 🚨 IF VIOLATION OCCURS:
-
-1. Immediately notify user
-2. Help sanitize all files
-3. Guide through secret rotation
-4. Commit sanitized versions
-5. Rotate compromised credentials
+## Secret Rotation Checklist
+When secrets are exposed:
+1. Generate new secret
+2. Update on production server
+3. Update in environment variables
+4. Restart affected services
+5. Revoke old secret
+6. Verify new secret works
