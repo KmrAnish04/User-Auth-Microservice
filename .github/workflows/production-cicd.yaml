@@ -279,11 +279,11 @@ jobs:
             
             # Stop existing containers gracefully
             echo "🛑 Stopping existing containers..."
-            docker compose down || echo "No containers running"
+            docker compose --env-file .env.production down || echo "No containers running"
             
             # Start containers with new image
             echo "▶️  Starting containers..."
-            docker compose up -d
+            docker compose --env-file .env.production up -d
             
             # Wait for application to be ready
             echo "⏳ Waiting for application to be healthy..."
@@ -310,11 +310,11 @@ jobs:
             echo "❌ Health check failed after 5 minutes!"
             echo "🔄 Rolling back to previous version..."
             
-            docker compose down
+            docker compose --env-file .env.production down
             
             if [ -f docker-compose.yml.backup ]; then
               mv docker-compose.yml.backup docker-compose.yml
-              docker compose up -d
+              docker compose --env-file .env.production up -d
               echo "⚠️  Rollback complete - previous version restored"
             else
               echo "❌ No backup found - manual intervention required"
