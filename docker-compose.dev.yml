@@ -33,6 +33,8 @@ services:
       - "3000:3000"
     env_file:
       - .env.local
+    volumes:
+      - ./config:/app/config:ro  # Mount JWT keys
     depends_on:
       mongodb:
         condition: service_started
@@ -45,6 +47,24 @@ services:
     #   - ./routes:/app/routes
     #   - ./controllers:/app/controllers
 
+  # Prometheus Monitoring (Optional for dev)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sso-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data-dev:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+    depends_on:
+      - app
+    restart: unless-stopped
+
 volumes:
   mongo-data-dev:
   redis-data-dev:
+  prometheus-data-dev:

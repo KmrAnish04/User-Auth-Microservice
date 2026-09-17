@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s      # How often to scrape metrics
+  evaluation_interval: 15s  # How often to evaluate rules
+  external_labels:
+    environment: 'production'
+    service: 'sso-auth'
+
+# Scrape configurations
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          instance: 'prometheus-server'
+
+  # Scrape your SSO Auth application
+  - job_name: 'sso-auth-app'
+    metrics_path: '/api/v1/metrics'
+    static_configs:
+      - targets: ['app:3000']
+        labels:
+          instance: 'sso-auth-app'
+          service: 'authentication'
