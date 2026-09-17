@@ -200,7 +200,7 @@ URL-encoded special characters in password:
 
 **Correct format:**
 ```
-mongodb+srv://myUserName:my%40pass@cluster.mongodb.net/db
+mongodb+srv://username:my%40pass@cluster.mongodb.net/db
 ```
 
 **Also added recommended options:**
@@ -220,7 +220,7 @@ Error connecting to Redis: [ErrorReply: WRONGPASS invalid username-password pair
 ```
 
 **Root Cause:**
-1. Initial Redis password (`rTD3M5yjLA7HzsF8tT84xYQrqXEy1e4ScQBzD/3VDc4=`) contained `/` and `=`
+1. Initial Redis password contained special characters (`/` and `=`)
 2. These needed URL-encoding in connection string
 3. Changed password to hex (no special chars)
 4. Redis container still using old password from persistent volume
