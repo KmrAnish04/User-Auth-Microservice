@@ -264,23 +264,16 @@ jobs:
             echo "🚀 Starting deployment to EC2..."
             echo "Image tag: $IMAGE_TAG"
             
-            # Navigate to app directory
-            cd ~/sso-auth-microservice || { echo "❌ App directory not found!"; exit 1; }
+            # Navigate to deployment directory
+            cd ~/sso-auth-microservice || { echo "❌ Deployment directory not found!"; exit 1; }
             
-            # Pull latest code (includes docker-compose and config changes)
-            echo "📥 Pulling latest code from git..."
-            git pull origin main || { echo "⚠️  Git pull failed, continuing with existing files..."; }
+            # Download latest docker-compose.prod.yml
+            echo "📥 Downloading latest docker-compose.prod.yml..."
+            curl -fsSL -o docker-compose.prod.yml https://raw.githubusercontent.com/KmrAnish04/SSO-Auth-Microservice/main/docker-compose.prod.yml
             
-            # Ensure required directories exist
-            echo "📁 Creating required directories..."
-            mkdir -p monitoring config/keys logs
-            
-            # Sync production docker-compose
-            echo "📝 Updating docker-compose.yml from docker-compose.prod.yml..."
-            cp docker-compose.prod.yml docker-compose.yml
-            
-            # Backup current docker-compose for rollback
-            cp docker-compose.yml docker-compose.yml.backup || echo "No previous docker-compose to backup"
+            # Download latest prometheus.yml
+            echo "📥 Downloading latest prometheus.yml..."
+            curl -fsSL -o monitoring/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/SSO-Auth-Microservice/main/monitoring/prometheus.yml
             
             # Pull latest Docker image
             echo "📥 Pulling Docker image..."
@@ -289,13 +282,13 @@ jobs:
             # Tag as latest locally for docker-compose
             docker tag ${{ env.DOCKER_IMAGE }}:$IMAGE_TAG ${{ env.DOCKER_IMAGE }}:latest
             
-            # Stop existing containers gracefully
+            # Stop existing containers
             echo "🛑 Stopping existing containers..."
-            docker compose --env-file .env.production down || echo "No containers running"
+            docker compose -f docker-compose.prod.yml --env-file .env.production down || echo "No containers running"
             
             # Start containers with new image
             echo "▶️  Starting containers..."
-            docker compose --env-file .env.production up -d
+            docker compose -f docker-compose.prod.yml --env-file .env.production up -d
             
             # Wait for application to be ready
             echo "⏳ Waiting for application to be healthy..."
@@ -318,19 +311,12 @@ jobs:
               fi
             done
             
-            # Health check failed - rollback
+            # Health check failed - stop containers
             echo "❌ Health check failed after 5 minutes!"
-            echo "🔄 Rolling back to previous version..."
+            echo "🛑 Stopping containers..."
             
-            docker compose --env-file .env.production down
-            
-            if [ -f docker-compose.yml.backup ]; then
-              mv docker-compose.yml.backup docker-compose.yml
-              docker compose --env-file .env.production up -d
-              echo "⚠️  Rollback complete - previous version restored"
-            else
-              echo "❌ No backup found - manual intervention required"
-            fi
+            docker compose -f docker-compose.prod.yml --env-file .env.production down
+            echo "⚠️  Deployment failed - containers stopped"
             
             exit 1
 
