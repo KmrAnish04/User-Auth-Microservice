@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-09-17  
 **Updated By:** Kiro AI Agent  
-**Application URL:** http://52.4.118.129:3000
+**Application URL:** http://<my-elastic-ip>:3000
 
 ---
 
@@ -37,7 +37,7 @@
 - ✅ AWS billing protection setup
 - ✅ EC2 t2.micro launched with Ubuntu 22.04
 - ✅ Security Group configured (SSH + Port 3000)
-- ✅ Elastic IP allocated: 52.4.118.129
+- ✅ Elastic IP allocated: <my-elastic-ip>
 - ✅ Docker & Docker Compose V2 installed
 - ✅ Application directory structure created
 - ✅ RSA keys generated for JWT
@@ -49,7 +49,7 @@
 - ✅ Deploy job completed in workflow
 - ✅ End-to-end CI/CD pipeline working
 - ✅ Application deployed and accessible
-- ✅ Health endpoint working: http://52.4.118.129:3000/api/v1/health
+- ✅ Health endpoint working: http://<my-elastic-ip>:3000/api/v1/health
 
 **Issues Resolved:** 8 major issues (see `phase4-issues-and-solutions.md`)
 
@@ -93,7 +93,7 @@
 
 ### Infrastructure
 - **EC2 Instance:** t2.micro (running)
-- **Public IP:** 52.4.118.129 (Elastic IP)
+- **Public IP:** <my-elastic-ip> (Elastic IP)
 - **Docker:** Installed & Running
 - **Application:** Deployed & Healthy
 

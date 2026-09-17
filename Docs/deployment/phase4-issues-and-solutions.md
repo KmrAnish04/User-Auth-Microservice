@@ -186,7 +186,7 @@ MongoAPIError: URI must include hostname, domain name, and tld
 **Root Cause:**
 MongoDB Atlas connection string had password with `@` character:
 ```
-mongodb+srv://Kmr:my@pass@cluster.mongodb.net/db
+mongodb+srv://myUserName:my@pass@cluster.mongodb.net/db
                     ↑ confuses parser as hostname separator
 ```
 
@@ -200,7 +200,7 @@ URL-encoded special characters in password:
 
 **Correct format:**
 ```
-mongodb+srv://Kmr:my%40pass@cluster.mongodb.net/db
+mongodb+srv://myUserName:my%40pass@cluster.mongodb.net/db
 ```
 
 **Also added recommended options:**
@@ -231,8 +231,8 @@ Error connecting to Redis: [ErrorReply: WRONGPASS invalid username-password pair
 openssl rand -hex 32
 
 # Update .env.production
-REDIS_PASSWORD=f968267ebd6d94117f093ea6db3d5b1c1cbf2a459bce0215b102d921a32f97f9
-REDIS_DB_URL=redis://:f968267ebd6d94117f093ea6db3d5b1c1cbf2a459bce0215b102d921a32f97f9@redis-stack:6379
+REDIS_PASSWORD=<your-secure-password-here>
+REDIS_DB_URL=<your-mongo-password-here>
 
 # Remove old Redis data
 docker compose down -v  # -v removes volumes
