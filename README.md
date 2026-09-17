@@ -76,3 +76,4 @@ To generate tokens for applications that need to access the authentication micro
   ```sh
   node ./src/generateAppTokens.js 
 # Trigger deployment
+# Trigger deployment 2
