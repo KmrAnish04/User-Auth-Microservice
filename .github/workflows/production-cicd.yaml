@@ -269,11 +269,11 @@ jobs:
             
             # Download latest docker-compose.prod.yml
             echo "📥 Downloading latest docker-compose.prod.yml..."
-            curl -fsSL -o docker-compose.prod.yml https://raw.githubusercontent.com/KmrAnish04/SSO-Auth-Microservice/main/docker-compose.prod.yml
+            curl -fsSL -o docker-compose.prod.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/docker-compose.prod.yml
             
             # Download latest prometheus.yml
             echo "📥 Downloading latest prometheus.yml..."
-            curl -fsSL -o monitoring/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/SSO-Auth-Microservice/main/monitoring/prometheus.yml
+            curl -fsSL -o monitoring/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/prometheus.yml
             
             # Pull latest Docker image
             echo "📥 Pulling Docker image..."
