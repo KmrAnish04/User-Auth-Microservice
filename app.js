@@ -24,6 +24,7 @@ require('./src/passport-Config');
 const userAuthRoute = require('./routes/auth.route.js');
 const user = require('./routes/user.route.js');
 const healthRoute = require('./routes/health.route.js');
+const { router: metricsRoute, metricsMiddleware } = require('./routes/metrics.route.js');
 const { write } = require('fs');
 
 
@@ -73,6 +74,9 @@ app.setupApp = async () => {
     // Performance: Compress responses
     app.use(compression());
 
+    // Metrics: Track all HTTP requests
+    app.use(metricsMiddleware);
+
     // Rate limiting for auth endpoints
     const authLimiter = rateLimit({
         windowMs: 1 * 60 * 1000, // 15 minutes
@@ -88,6 +92,7 @@ app.setupApp = async () => {
     app.use('/api/v1/auth', authLimiter, userAuthRoute);
     app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);
     app.use('/api/v1/health', authLimiter, healthRoute);
+    app.use('/api/v1', metricsRoute); // Prometheus metrics endpoint
 
 
     app.get('/', async function(req, res, next) {
