@@ -267,6 +267,18 @@ jobs:
             # Navigate to app directory
             cd ~/sso-auth-microservice || { echo "❌ App directory not found!"; exit 1; }
             
+            # Pull latest code (includes docker-compose and config changes)
+            echo "📥 Pulling latest code from git..."
+            git pull origin main || { echo "⚠️  Git pull failed, continuing with existing files..."; }
+            
+            # Ensure required directories exist
+            echo "📁 Creating required directories..."
+            mkdir -p monitoring config/keys logs
+            
+            # Sync production docker-compose
+            echo "📝 Updating docker-compose.yml from docker-compose.prod.yml..."
+            cp docker-compose.prod.yml docker-compose.yml
+            
             # Backup current docker-compose for rollback
             cp docker-compose.yml docker-compose.yml.backup || echo "No previous docker-compose to backup"
             
