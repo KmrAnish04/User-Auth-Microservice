@@ -12,7 +12,7 @@ services:
     networks:
       - sso-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-defaultRedisPassword123}", "ping"]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,8 +35,6 @@ services:
       - "3000:3000"
     env_file:
       - .env.production
-    environment:
-      - NODE_ENV=production
     volumes:
       - ./config:/app/config:ro
     networks:
@@ -61,7 +59,7 @@ services:
 
   # Prometheus Monitoring
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.48.0
     container_name: sso-prometheus
     restart: unless-stopped
     ports:
@@ -86,6 +84,31 @@ services:
           cpus: '0.1'
           memory: 128M
 
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.2.3
+    container_name: sso-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env.production
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - sso-network
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
 # Define network for service isolation
 networks:
   sso-network:
@@ -95,3 +118,4 @@ networks:
 volumes:
   redis-data:
   prometheus-data:
+  grafana-data:
