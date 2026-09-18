@@ -42,7 +42,16 @@ const metricsMiddleware = (req, res, next) => {
   // Track request completion
   res.on('finish', () => {
     const duration = (Date.now() - start) / 1000;
-    const route = req.route ? req.route.path : req.path;
+    
+    // Capture the actual request path (e.g., /api/v1/health)
+    let route = req.path;
+    
+    // If matched route exists, use base path + route path
+    if (req.route && req.baseUrl) {
+      route = req.baseUrl + req.route.path;
+    } else if (req.route) {
+      route = req.route.path;
+    }
     
     httpRequestDuration.observe(
       { method: req.method, route, status_code: res.statusCode },
