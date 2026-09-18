@@ -91,7 +91,7 @@ app.setupApp = async () => {
     // ********************************* Routes *********************************
     app.use('/api/v1/auth', authLimiter, userAuthRoute);
     app.use('/api/v1/users', passport.authenticate('jwt', {session: false}), user);
-    app.use('/api/v1/health', authLimiter, healthRoute);
+    app.use('/api/v1/health', healthRoute);
     app.use('/api/v1', metricsRoute); // Prometheus metrics endpoint
 
 
