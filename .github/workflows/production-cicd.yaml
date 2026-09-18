@@ -276,9 +276,6 @@ jobs:
             curl -fsSL -o monitoring/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/prometheus.yml
             curl -fsSL -o monitoring/loki-config.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/loki-config.yml
             curl -fsSL -o monitoring/promtail-config.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/promtail-config.yml
-            
-            # Create Grafana datasources directory if not exists
-            mkdir -p monitoring/grafana/provisioning/datasources
             curl -fsSL -o monitoring/grafana/provisioning/datasources/loki.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/datasources/loki.yml
             
             # Pull latest Docker image
