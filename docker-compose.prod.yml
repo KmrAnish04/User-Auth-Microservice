@@ -100,6 +100,7 @@ services:
       - sso-network
     depends_on:
       - prometheus
+      - loki
     deploy:
       resources:
         limits:
@@ -108,6 +109,58 @@ services:
         reservations:
           cpus: '0.1'
           memory: 128M
+
+  # Loki Log Aggregation
+  loki:
+    image: grafana/loki:2.9.3
+    container_name: sso-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - sso-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Promtail Log Collector
+  promtail:
+    image: grafana/promtail:2.9.3
+    container_name: sso-promtail
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - sso-network
+    depends_on:
+      loki:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
 
 # Define network for service isolation
 networks:
@@ -119,3 +172,4 @@ volumes:
   redis-data:
   prometheus-data:
   grafana-data:
+  loki-data:
