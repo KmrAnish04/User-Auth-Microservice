@@ -9,3 +9,18 @@ router.get('/', getAllUsers);
 router.get('/profile', getUserProfile);
 
 module.exports = router;
+
+/* Test endpoint for load testing - simulates slow operation */
+router.get('/slow-test', async (req, res) => {
+  // Simulate slow database query or processing
+  const delay = parseInt(req.query.delay) || 2000; // Default 2 seconds
+  
+  await new Promise(resolve => setTimeout(resolve, delay));
+  
+  res.json({
+    success: true,
+    message: 'Slow test endpoint',
+    delay: delay,
+    timestamp: new Date().toISOString()
+  });
+});
