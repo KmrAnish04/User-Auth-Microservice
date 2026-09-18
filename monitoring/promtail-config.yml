@@ -1,0 +1,98 @@
+# Promtail Configuration for SSO Auth Microservice
+# Collects logs from all Docker containers and sends to Loki
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+# Position tracking (remembers where it left off)
+positions:
+  filename: /tmp/positions.yaml
+
+# Loki client configuration
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    backoff_config:
+      min_period: 500ms
+      max_period: 5m
+      max_retries: 10
+    timeout: 10s
+
+# Scrape configurations
+scrape_configs:
+  # Collect logs from all Docker containers
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.docker.compose.project=sso-auth-microservice"]
+    
+    relabel_configs:
+      # Extract container name
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      
+      # Extract log stream (stdout/stderr)
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+      
+      # Extract service name from docker-compose label
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'service'
+      
+      # Extract container ID
+      - source_labels: ['__meta_docker_container_id']
+        target_label: 'container_id'
+        regex: '(.{12}).*'
+        replacement: '$1'
+      
+      # Set job label
+      - replacement: 'docker'
+        target_label: 'job'
+    
+    pipeline_stages:
+      # Parse JSON logs (Winston format)
+      - json:
+          expressions:
+            level: level
+            message: message
+            timestamp: timestamp
+      
+      # Add labels from parsed JSON
+      - labels:
+          level:
+      
+      # Set timestamp from log entry (if available)
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      
+      # Format output
+      - output:
+          source: message
+
+  # Collect system logs from containers (fallback for non-JSON logs)
+  - job_name: docker-raw
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.docker.compose.project=sso-auth-microservice"]
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'service'
+      
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+      
+      - replacement: 'docker-raw'
+        target_label: 'job'
