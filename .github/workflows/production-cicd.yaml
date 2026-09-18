@@ -267,10 +267,6 @@ jobs:
             # Navigate to deployment directory
             cd ~/sso-auth-microservice || { echo "❌ Deployment directory not found!"; exit 1; }
             
-            # Create required directories
-            echo "📁 Creating directory structure..."
-            mkdir -p monitoring/grafana/provisioning/datasources
-            
             # Download latest docker-compose.prod.yml
             echo "📥 Downloading latest docker-compose.prod.yml..."
             curl -fsSL -o docker-compose.prod.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/docker-compose.prod.yml
