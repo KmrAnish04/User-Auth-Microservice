@@ -282,6 +282,11 @@ jobs:
             curl -fsSL -o monitoring/grafana/provisioning/datasources/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/datasources/prometheus.yml
             curl -fsSL -o monitoring/grafana/provisioning/datasources/loki.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/datasources/loki.yml
             
+            # Download Grafana dashboard configs
+            echo "📥 Downloading Grafana dashboard configs..."
+            curl -fsSL -o monitoring/grafana/provisioning/dashboards/dashboards.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/dashboards/dashboards.yml
+            curl -fsSL -o monitoring/grafana/provisioning/dashboards/sso-auth-dashboard.json https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/dashboards/sso-auth-dashboard.json
+            
             # Pull latest Docker image
             echo "📥 Pulling Docker image..."
             docker pull ${{ env.DOCKER_IMAGE }}:$IMAGE_TAG
