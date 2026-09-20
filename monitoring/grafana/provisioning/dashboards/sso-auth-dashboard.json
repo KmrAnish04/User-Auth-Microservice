@@ -584,7 +584,7 @@
             "type": "loki",
             "uid": "loki-datasource"
           },
-          "expr": "sum by(level) (count_over_time({container=\"sso-auth-app\"} | json [1m]))",
+          "expr": "sum by(level) (count_over_time({container=\"sso-auth-app\"} |~ `\\\"level\\\":\\\"` | json [1m]))",
           "refId": "A",
           "legendFormat": "{{level}}"
         }
@@ -655,7 +655,7 @@
             "type": "loki",
             "uid": "loki-datasource"
           },
-          "expr": "{container=\"sso-auth-app\"} |~ `\"level\":\"error\"` | json",
+          "expr": "{container=\"sso-auth-app\"} |~ `\\\"level\\\":\\\"error\\\"`",
           "refId": "A"
         }
       ],
@@ -690,7 +690,7 @@
             "type": "loki",
             "uid": "loki-datasource"
           },
-          "expr": "{container=\"sso-auth-app\"} |~ ` 4\\\\d{2} ` | json",
+          "expr": "{container=\"sso-auth-app\"} |~ ` 4[0-9]{2} `",
           "refId": "A"
         }
       ],
@@ -725,7 +725,7 @@
             "type": "loki",
             "uid": "loki-datasource"
           },
-          "expr": "{container=\"sso-auth-app\"} |~ ` 5\\\\d{2} ` | json",
+          "expr": "{container=\"sso-auth-app\"} |~ ` 5[0-9]{2} `",
           "refId": "A"
         }
       ],
