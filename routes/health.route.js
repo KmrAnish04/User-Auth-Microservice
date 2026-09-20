@@ -49,11 +49,22 @@ router.get('/slow-test', async (req, res) => {
 router.get('/error-test', async (req, res) => {
     const logger = require('../src/utils/logger');
     
-    // Log an error message first
-    logger.error('Test error triggered via /health/error-test endpoint');
-    
-    // Throw an error to generate 500 response
-    throw new Error('This is a test 500 error for monitoring dashboard testing');
+    try {
+        // Log an error message
+        logger.error('Test error triggered via /health/error-test endpoint', {
+            timestamp: new Date().toISOString(),
+            test: true
+        });
+        
+        // Explicitly send 500 response
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: 'This is a test 500 error for monitoring dashboard testing',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 module.exports = router;
