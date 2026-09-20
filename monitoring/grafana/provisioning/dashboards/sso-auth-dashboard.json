@@ -663,7 +663,7 @@
       "type": "logs"
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "liveNow": true,
   "schemaVersion": 38,
   "style": "dark",
