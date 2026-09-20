@@ -284,7 +284,8 @@ jobs:
             
             # Download Grafana dashboard configs
             echo "📥 Downloading Grafana dashboard configs..."
-            mkdir -p monitoring/grafana/provisioning/dashboards
+            sudo mkdir -p monitoring/grafana/provisioning/dashboards
+            sudo chown -R ubuntu:ubuntu monitoring/grafana/provisioning/dashboards
             curl -fsSL -o monitoring/grafana/provisioning/dashboards/dashboards.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/dashboards/dashboards.yml
             curl -fsSL -o monitoring/grafana/provisioning/dashboards/sso-auth-dashboard.json https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/dashboards/sso-auth-dashboard.json
             
