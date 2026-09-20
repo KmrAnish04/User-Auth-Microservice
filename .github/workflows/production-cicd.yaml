@@ -276,6 +276,10 @@ jobs:
             curl -fsSL -o monitoring/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/prometheus.yml
             curl -fsSL -o monitoring/loki-config.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/loki-config.yml
             curl -fsSL -o monitoring/promtail-config.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/promtail-config.yml
+            
+            # Download Grafana datasource configs
+            echo "📥 Downloading Grafana datasource configs..."
+            curl -fsSL -o monitoring/grafana/provisioning/datasources/prometheus.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/datasources/prometheus.yml
             curl -fsSL -o monitoring/grafana/provisioning/datasources/loki.yml https://raw.githubusercontent.com/KmrAnish04/Authentication-Authorization-Microservice/main/monitoring/grafana/provisioning/datasources/loki.yml
             
             # Pull latest Docker image
