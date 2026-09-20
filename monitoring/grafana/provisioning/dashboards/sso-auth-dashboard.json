@@ -448,7 +448,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "http_active_connections{service=\"authentication\"}",
+          "expr": "active_connections{service=\"authentication\"}",
           "refId": "A"
         }
       ],
@@ -620,7 +620,7 @@
             "type": "loki",
             "uid": "loki-datasource"
           },
-          "expr": "{container=\"sso-auth-app\"} |~ `\"level\":\"` | json",
+          "expr": "{container=\"sso-auth-app\"}",
           "refId": "A"
         }
       ],
@@ -663,7 +663,8 @@
       "type": "logs"
     }
   ],
-  "refresh": "5s",
+  "refresh": "",
+  "liveNow": true,
   "schemaVersion": 38,
   "style": "dark",
   "tags": ["sso", "authentication", "monitoring"],
