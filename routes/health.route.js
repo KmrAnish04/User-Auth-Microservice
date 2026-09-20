@@ -45,4 +45,15 @@ router.get('/slow-test', async (req, res) => {
     });
 });
 
+// Test endpoint for 5xx error testing (PUBLIC, NO AUTH)
+router.get('/error-test', async (req, res) => {
+    const logger = require('../src/utils/logger');
+    
+    // Log an error message first
+    logger.error('Test error triggered via /health/error-test endpoint');
+    
+    // Throw an error to generate 500 response
+    throw new Error('This is a test 500 error for monitoring dashboard testing');
+});
+
 module.exports = router;
